@@ -111,10 +111,9 @@ namespace HydraMenu.anticheat
 			}
 
 			int oldReadPosition = reader.Position;
-			bool blockRpc = false;
 
-			rpcCheck.Validate(player, reader, ref blockRpc);
-			if(discardRpc && blockRpc) return false;
+			bool isValid = rpcCheck.Validate(player, reader);
+			if(!isValid && discardRpc) return false;
 
 			// Put the read position back to its previous spot to not mess up the HandleRpc function
 			reader.Position = oldReadPosition;
@@ -127,10 +126,9 @@ namespace HydraMenu.anticheat
 			if(!Enabled || gameDataCheck == null || !gameDataCheck.Enabled) return true;
 
 			int oldReadPosition = reader.Position;
-			bool blockMessage = false;
 
-			gameDataCheck.Validate(reader, ref blockMessage);
-			if(discardRpc && blockMessage) return false;
+			bool isValid = gameDataCheck.Validate(reader);
+			if(!isValid && discardRpc) return false;
 
 			// Put the read position back to its previous spot
 			reader.Position = oldReadPosition;
