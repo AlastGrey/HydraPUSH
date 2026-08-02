@@ -99,7 +99,7 @@ namespace HydraMenu.anticheat
 
 			if(sourceNetObj != rpcCheck.GetExpectedNetObject())
 			{
-				// Recieved a RPC that should've been sent for a different net object, some sort of exploit attempt?
+				// Received an RPC that should've been sent for a different net object, some sort of exploit attempt?
 				return false;
 			}
 
