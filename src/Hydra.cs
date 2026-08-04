@@ -22,7 +22,6 @@ internal class Hydra : BasePlugin
 		Log = base.Log;
 
 		AddComponent<MainUI>();
-		AddComponent<Roles>();
 
 		notifications = AddComponent<NotificationManager>();
 		routines = AddComponent<RoutineManager>();
