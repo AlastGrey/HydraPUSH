@@ -48,6 +48,20 @@ namespace HydraMenu.network
 			spawn.Serialize(writer);
 		}
 
+		public void QueueCompleteTask(PlayerControl source, uint taskIndex)
+		{
+			if(AmTarget)
+			{
+				source.CompleteTask(taskIndex);
+			}
+
+			writer.StartMessage((byte)GameDataTypes.RpcFlag);
+			writer.WritePacked(source.NetId);
+			writer.Write((byte)RpcCalls.CompleteTask);
+			writer.WritePacked(taskIndex);
+			writer.EndMessage();
+		}
+
 		public void QueueSetName(PlayerControl source, string name)
 		{
 			if(AmTarget)

@@ -1,6 +1,9 @@
-﻿using Hazel;
+﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
+using Hazel;
 using HydraMenu.features;
 using HydraMenu.network;
+using System;
+using System.Collections;
 using UnityEngine;
 
 namespace HydraMenu.ui.sections
@@ -72,6 +75,11 @@ namespace HydraMenu.ui.sections
 				}
 			}
 
+			if(GUILayout.Button("Deplete HnS Timer"))
+			{
+				AmongUsClient.Instance.StartCoroutine(DepleteSeekTimer().WrapToIl2Cpp());
+			}
+
 			GUILayout.Space(5);
 			GUILayout.Label($"Vent TP:");
 			Hydra.routines.teleportSpammer.Enabled = GUILayout.Toggle(Hydra.routines.teleportSpammer.Enabled, "Teleport Flooder");
@@ -106,6 +114,83 @@ namespace HydraMenu.ui.sections
 
 			GUILayout.Label($"Lock and Unlock Delay: {Hydra.routines.doorTroller.lockAndUnlockDelay:F2}s");
 			Hydra.routines.doorTroller.lockAndUnlockDelay = GUILayout.HorizontalSlider(Hydra.routines.doorTroller.lockAndUnlockDelay, 0.1f, 2.0f);
+		}
+
+		// In Hide and Seek, completing a task will reduce the HnS hide timer depending on the length of the task (short, common, or long)
+		// The problem is the game reduces the task timer even if we have already completed the task
+		// so we can spam the CompleteTask RPC with the same task, and reduce the task timer to zero seconds
+		private IEnumerator DepleteSeekTimer()
+		{
+			if(!GameManager.Instance.IsHideAndSeek())
+			{
+				Hydra.notifications.Send("Deplete HnS Timer", "This feature can only be used in Hide and Seek.");
+				yield break;
+			}
+
+			LogicGameFlowHnS gameFlow = GameManager.Instance.LogicFlow.Cast<LogicGameFlowHnS>();
+			LogicOptionsHnS logicOptions = GameManager.Instance.LogicOptions.Cast<LogicOptionsHnS>();
+
+			if(AmongUsClient.Instance.AmHost)
+			{
+				gameFlow.AdjustEscapeTimer(gameFlow.currentHideTime, true);
+				yield break;
+			}
+
+			PlayerTask task = PlayerControl.LocalPlayer.myTasks[0];
+			if(task == null)
+			{
+				Hydra.notifications.Send("Deplete HnS Timer", "This feature requires you to have at least one task.");
+				yield break;
+			}
+
+			// If the HnS hide timer is up, all our tasks are replaced with a task of ImportantTextTask
+			NormalPlayerTask normalTask = task.TryCast<NormalPlayerTask>();
+			if(normalTask == null)
+			{
+				Hydra.notifications.Send("Deplete HnS Timer", "This feature cannot be used during the final hide time.");
+				yield break;
+			}
+
+			float completeDeduction;
+			switch(normalTask.Length)
+			{
+				case NormalPlayerTask.TaskLength.None:
+				case NormalPlayerTask.TaskLength.Common:
+				default:
+					completeDeduction = logicOptions.GetCommonTaskTimeValue();
+					break;
+
+				case NormalPlayerTask.TaskLength.Short:
+					completeDeduction = logicOptions.GetShortTaskTimeValue();
+					break;
+
+				case NormalPlayerTask.TaskLength.Long:
+					completeDeduction = logicOptions.GetLongTaskTimeValue();
+					break;
+			}
+
+			int totalCompletions = 0;
+			int requiredCompletions = (int)Math.Ceiling(gameFlow.currentHideTime / completeDeduction);
+
+			Hydra.Log.LogInfo($"Current escape time is {gameFlow.currentHideTime} and each task completion reduces the timer by {completeDeduction}s. We need to send the CompleteTask RPC {requiredCompletions} times to deplete the HnS timer.");
+
+			while(totalCompletions < requiredCompletions)
+			{
+				BatchedMessage batch = new BatchedMessage();
+
+				// The message packing limit for non-hosts should be ten, but the Among Us anticheat disconnects us if we have more than six CompleteTask RPCs in a single batch
+				for(byte i = 0; i < 6; i++)
+				{
+					batch.QueueCompleteTask(PlayerControl.LocalPlayer, (uint)task.Index);
+				}
+
+				batch.FinishBatch();
+
+				// Each batch will contain exactly six CompleteTask RPCs, which may be more than the required task completions, but that is fine
+				totalCompletions += 6;
+
+				yield return Effects.Wait(0.05f);
+			}
 		}
 	}
 }
