@@ -1,11 +1,13 @@
 ﻿using AmongUs.Data;
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using HydraMenu.assets;
 using HydraMenu.features;
 using HydraMenu.network;
 using InnerNet;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HydraMenu.ui.sections
@@ -196,8 +198,10 @@ namespace HydraMenu.ui.sections
 				Utilities.KickPlayer(target);
 			}
 
-			GUILayout.Label($"Teleport player to vent: {selectedVent}");
-			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, ShipStatus.Instance != null ? ShipStatus.Instance.AllVents.Count - 1 : 10);
+			Dictionary<int, string> vents = MapAssets.GetVents();
+
+			GUILayout.Label($"Teleport player to vent: {vents[selectedVent]}");
+			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);
 			if(GUILayout.Button("Teleport"))
 			{
 				Teleporter.TeleportToVent(target, selectedVent);

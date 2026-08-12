@@ -1,9 +1,11 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
+using HydraMenu.assets;
 using HydraMenu.features;
 using HydraMenu.network;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HydraMenu.ui.sections
@@ -80,12 +82,14 @@ namespace HydraMenu.ui.sections
 				AmongUsClient.Instance.StartCoroutine(DepleteSeekTimer().WrapToIl2Cpp());
 			}
 
+			Dictionary<int, string> vents = MapAssets.GetVents();
+
 			GUILayout.Space(5);
 			GUILayout.Label($"Vent TP:");
 			Hydra.routines.teleportSpammer.Enabled = GUILayout.Toggle(Hydra.routines.teleportSpammer.Enabled, "Teleport Flooder");
 
-			GUILayout.Label($"Teleport everyone to vent: {selectedVent}");
-			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, ShipStatus.Instance != null ? ShipStatus.Instance.AllVents.Count - 1 : 10);
+			GUILayout.Label($"Teleport everyone to vent: {vents[selectedVent]}");
+			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);
 
 			if(GUILayout.Button("Teleport to Vent"))
 			{
