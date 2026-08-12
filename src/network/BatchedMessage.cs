@@ -10,6 +10,7 @@ namespace HydraMenu.network
 	{
 		public readonly MessageWriter writer;
 		public readonly int targetClientId;
+		private int msgCount = 0;
 
 		public BatchedMessage(int targetClientId = (int)Constants.OwnerIds.Everyone)
 		{
@@ -41,6 +42,8 @@ namespace HydraMenu.network
 
 		public void QueueDataFlag(uint netId, MessageWriter msg)
 		{
+			msgCount++;
+
 			writer.StartMessage((byte)GameDataTypes.DataFlag);
 			writer.WritePacked(netId);
 			writer.Write(msg, false);
@@ -49,12 +52,16 @@ namespace HydraMenu.network
 
 		public void QueueSpawn(InnerNetObject netObject, int ownerId = -2, SpawnFlags flags = SpawnFlags.None)
 		{
+			msgCount++;
+
 			SpawnGameDataMessage spawn = AmongUsClient.Instance.CreateSpawnMessage(netObject, ownerId, flags);
 			spawn.Serialize(writer);
 		}
 
 		public void QueueCompleteTask(PlayerControl source, uint taskIndex)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.CompleteTask(taskIndex);
@@ -70,6 +77,8 @@ namespace HydraMenu.network
 
 		public void QueueSetName(PlayerControl source, string name)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetName(name);
@@ -86,6 +95,8 @@ namespace HydraMenu.network
 
 		public void QueueSetColor(PlayerControl source, byte color)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetColor(color);
@@ -102,6 +113,8 @@ namespace HydraMenu.network
 
 		public void QueueMurderPlayer(PlayerControl source, PlayerControl target, MurderResultFlags result)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.MurderPlayer(target, result);
@@ -118,6 +131,8 @@ namespace HydraMenu.network
 
 		public void QueueSnapTo(PlayerControl source, Vector2 position)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.NetTransform.SnapTo(position, (ushort)(source.NetTransform.lastSequenceId + 1));
@@ -136,6 +151,8 @@ namespace HydraMenu.network
 
 		public void QueueCloseMeeting()
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				MeetingHud.Instance.Close();
@@ -150,6 +167,8 @@ namespace HydraMenu.network
 
 		public void QueueVotingComplete(MeetingHud.VoterState[] voteStates, NetworkedPlayerInfo ejectedPlayer, bool isTie)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				MeetingHud.Instance.VotingComplete(voteStates, ejectedPlayer, isTie);
@@ -175,6 +194,8 @@ namespace HydraMenu.network
 
 		public void QueueAddVote(int sourceId, int targetId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				VoteBanSystem.Instance.AddVote(sourceId, targetId);
@@ -191,6 +212,8 @@ namespace HydraMenu.network
 
 		public void QueueCloseDoors(SystemTypes door)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				ShipStatus.Instance.CloseDoorsOfType(door);
@@ -206,6 +229,8 @@ namespace HydraMenu.network
 
 		public void QueueUpdateSystem(PlayerControl source, SystemTypes system, MessageWriter msg)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				MessageReader reader = MessageReader.Get(msg.ToByteArray(false));
@@ -225,6 +250,8 @@ namespace HydraMenu.network
 
 		public void QueueSetHatStr(PlayerControl source, string hat, byte seqId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetHat(hat, source.Data.DefaultOutfit.ColorId);
@@ -241,6 +268,8 @@ namespace HydraMenu.network
 
 		public void QueueSetSkinStr(PlayerControl source, string skin, byte seqId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetSkin(skin, source.Data.DefaultOutfit.ColorId);
@@ -257,6 +286,8 @@ namespace HydraMenu.network
 
 		public void QueueSetPetStr(PlayerControl source, string pet, byte seqId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetPet(pet, source.Data.DefaultOutfit.ColorId);
@@ -273,6 +304,8 @@ namespace HydraMenu.network
 
 		public void QueueSetVisorStr(PlayerControl source, string visor, byte seqId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetVisor(visor, source.Data.DefaultOutfit.ColorId);
@@ -289,6 +322,8 @@ namespace HydraMenu.network
 
 		public void QueueSetNameplateStr(PlayerControl source, string nameplate, byte seqId)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.SetNamePlate(nameplate);
@@ -305,6 +340,8 @@ namespace HydraMenu.network
 
 		public void QueueSetRole(PlayerControl source, RoleTypes role, bool canOverride = false)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.StartCoroutine(source.CoSetRole(role, canOverride));
@@ -321,6 +358,8 @@ namespace HydraMenu.network
 
 		public void QueueShapeshift(PlayerControl source, PlayerControl target, bool shouldAnimate)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				source.Shapeshift(target, shouldAnimate);
@@ -337,6 +376,8 @@ namespace HydraMenu.network
 
 		public void QueueTriggerSpore(PlayerControl source, Mushroom mushroom)
 		{
+			msgCount++;
+
 			if(IsGlobal || AmTarget)
 			{
 				mushroom.TriggerSpores();
@@ -353,7 +394,10 @@ namespace HydraMenu.network
 		public void FinishBatch()
 		{
 			writer.EndMessage();
-			AmongUsClient.Instance.SendOrDisconnect(writer);
+			if(msgCount > 0)
+			{
+				AmongUsClient.Instance.SendOrDisconnect(writer);
+			}
 			writer.Recycle();
 		}
 	}
