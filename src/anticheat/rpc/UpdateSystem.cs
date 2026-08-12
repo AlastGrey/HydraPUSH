@@ -104,6 +104,12 @@ namespace HydraMenu.anticheat.rpc
 				return false;
 			}
 
+			if(player.inVent)
+			{
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to sabotage {system} while in a vent.");
+				return false;
+			}
+
 			return true;
 		}
 
