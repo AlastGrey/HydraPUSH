@@ -59,7 +59,7 @@ namespace HydraMenu.routines
 			if(PlayerControl.LocalPlayer != null)
 			{
 				PlayerControl.LocalPlayer.moveable = true;
-				PlayerControl.LocalPlayer.cosmetics.PettingHand.StopPetting();
+				PlayerControl.LocalPlayer.MyPhysics.RpcCancelPet();
 			}
 		}
 
