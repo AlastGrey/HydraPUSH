@@ -188,6 +188,8 @@ namespace HydraMenu.network
 
 			writer.Write(ejectedPlayer != null ? ejectedPlayer.PlayerId : 255);
 			writer.Write(isTie);
+			writer.Write(wasOverruled);
+			writer.Write(overruleNonce);
 
 			writer.EndMessage();
 		}
