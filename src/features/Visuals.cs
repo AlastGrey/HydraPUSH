@@ -153,7 +153,7 @@ namespace HydraMenu.features
 					if(value)
 					{
 						camera.SetTarget(target);
-						wasShadowsEnabled = HudManager._instance.ShadowQuad.gameObject.active;
+						wasShadowsEnabled = HudManager.Instance.ShadowQuad.gameObject.active;
 						HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
 					}
 					else
