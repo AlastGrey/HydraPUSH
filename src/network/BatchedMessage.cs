@@ -186,7 +186,7 @@ namespace HydraMenu.network
 				state.Serialize(writer);
 			}
 
-			writer.Write(ejectedPlayer != null ? ejectedPlayer.PlayerId : 255);
+			writer.Write(ejectedPlayer != null ? ejectedPlayer.PlayerId : byte.MaxValue);
 			writer.Write(isTie);
 			writer.Write(wasOverruled);
 			writer.Write(overruleNonce);
