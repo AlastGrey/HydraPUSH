@@ -94,7 +94,19 @@ namespace HydraMenu.ui
 				sections[activeTab].HandleSubsectionMove(offset);
 			}
 
-			HandleBoxMovement();
+			BlockClickThrough();
+		}
+
+		private void BlockClickThrough()
+		{
+			if(!MenuSection.BlockClickThrough) return;
+
+			Vector2 mousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+
+			if(IsInBox(mousePos) && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)))
+			{
+				Input.ResetInputAxes();
+			}
 		}
 
 		public void OnGUI()
@@ -103,6 +115,8 @@ namespace HydraMenu.ui
 			if(!visible) return;
 
 			GUI.skin.label.fontSize = (int)(13 * scale);
+
+			HandleBoxMovement();
 
 			// Render UI box
 			GUI.Box(new Rect(windowPosition.x, windowPosition.y, WindowSize.x, WindowSize.y), $"{MyPluginInfo.PLUGIN_NAME} - {MyPluginInfo.PLUGIN_VERSION}", Styles.MainBox);
@@ -123,6 +137,18 @@ namespace HydraMenu.ui
 
 					GUILayout.EndScrollView();
 					GUILayout.EndArea();
+				}
+			}
+
+			if(MenuSection.BlockClickThrough && IsInBox(Event.current.mousePosition))
+			{
+				switch(Event.current.type)
+				{
+					case EventType.MouseDown:
+					case EventType.MouseUp:
+					case EventType.ScrollWheel:
+						Event.current.Use();
+						break;
 				}
 			}
 		}
