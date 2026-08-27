@@ -13,6 +13,8 @@ namespace HydraMenu.features
 			MainUI ui = MainUI.Instance;
 			if(ui == null || !ui.visible) return true;
 
+			if(GUIUtility.hotControl != 0) return true;
+
 			Vector2 mousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
 			bool inMenu = mousePos.x >= MainUI.windowPosition.x && mousePos.x <= (MainUI.windowPosition.x + MainUI.WindowSize.x) && mousePos.y >= MainUI.windowPosition.y && mousePos.y <= (MainUI.windowPosition.y + MainUI.WindowSize.y);
 			return !inMenu;
@@ -27,4 +29,7 @@ namespace HydraMenu.features
 
 	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.ReceiveClickUp))]
 	static class BlockPassiveButtonClickUp { static bool Prefix() => ClickBlock.ShouldBlock(); }
+
+	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.SetPassiveButtonHoverStateActive))]
+	static class BlockHoverActive { static bool Prefix() => ClickBlock.ShouldBlock(); }
 }
