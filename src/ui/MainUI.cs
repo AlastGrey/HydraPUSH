@@ -7,6 +7,13 @@ namespace HydraMenu.ui
 	public class MainUI : MonoBehaviour
 	{
 		// Current window
+		public static MainUI Instance;
+
+		private void Awake()
+		{
+			Instance = this;
+		}
+
 		public bool visible = false;
 		public static float scale = 1.0f;
 
@@ -93,20 +100,15 @@ namespace HydraMenu.ui
 
 				sections[activeTab].HandleSubsectionMove(offset);
 			}
-
-			BlockClickThrough();
 		}
 
-		private void BlockClickThrough()
+		private bool IsInHeader(Vector2 mousePos)
 		{
-			if(!MenuSection.BlockClickThrough) return;
-
-			Vector2 mousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
-
-			if(IsInBox(mousePos) && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)))
-			{
-				Input.ResetInputAxes();
-			}
+			return
+				mousePos.x >= windowPosition.x &&
+				mousePos.x <= (windowPosition.x + WindowSize.x) &&
+				mousePos.y >= windowPosition.y &&
+				mousePos.y <= (windowPosition.y + HeaderSize.y);
 		}
 
 		public void OnGUI()
@@ -140,17 +142,6 @@ namespace HydraMenu.ui
 				}
 			}
 
-			if(MenuSection.BlockClickThrough && IsInBox(Event.current.mousePosition))
-			{
-				switch(Event.current.type)
-				{
-					case EventType.MouseDown:
-					case EventType.MouseUp:
-					case EventType.ScrollWheel:
-						Event.current.Use();
-						break;
-				}
-			}
 		}
 
 		private void HandleBoxMovement()
@@ -164,7 +155,7 @@ namespace HydraMenu.ui
 				// I tried using currentEvent.delta to get the delta between the last mouse position and the current one,
 				// however I noticed it would 'skip' quite frequently resulting in the window box not properly lining up where it should actually be dragged
 				case EventType.MouseDown:
-					if(!IsInBox(mousePos)) break;
+					if(!IsInHeader(mousePos)) break;
 
 					isDragging = true;
 					mouseDelta = currentEvent.mousePosition - windowPosition;
@@ -181,15 +172,6 @@ namespace HydraMenu.ui
 					isDragging = false;
 					break;
 			}
-		}
-
-		private bool IsInBox(Vector2 mousePos)
-		{
-			return
-				mousePos.x >= windowPosition.x &&
-				mousePos.x <= (windowPosition.x + WindowSize.x) &&
-				mousePos.y >= windowPosition.y &&
-				mousePos.y <= (windowPosition.y + WindowSize.y);
 		}
 
 		private void RenderTab(byte position, ISection section)
