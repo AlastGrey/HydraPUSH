@@ -71,5 +71,34 @@ namespace HydraMenu.modules.host
 				Hydra.Log.LogInfo($"Assigned ourself the {assignedRole} role!");
 			}
 		}
+
+		private void OnGameStart()
+		{
+			if(AmongUsClient.Instance.AmHost || Utilities.IsAnticheatPresent()) return;
+			Hydra.Log.LogMessage($"We are in a host-authoritative lobby, we can hijack the assigned roles");
+
+			// If we are in Hide and Seek, we can assign everyone the Engineer role so the host doesn't assign a second impostor
+			if(GameManager.Instance.IsHideAndSeek() && RoleManager.IsImpostorRole(AssignedRole))
+			{
+				foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+				{
+					if(player == PlayerControl.LocalPlayer) continue;
+
+					player.RpcSetRole(RoleTypes.Engineer, false);
+				}
+			}
+
+			PlayerControl.LocalPlayer.RpcSetRole(AssignedRole, false);
+		}
+
+		protected override void OnEnable()
+		{
+			EventCoordinator.OnGameStart += OnGameStart;
+		}
+
+		protected override void OnDisable()
+		{
+			EventCoordinator.OnGameStart -= OnGameStart;
+		}
 	}
 }
