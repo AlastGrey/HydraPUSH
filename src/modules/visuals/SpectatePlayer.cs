@@ -8,7 +8,6 @@ namespace HydraMenu.modules.visuals
 		public SpectatePlayer() : base("SpectatePlayer") { }
 
 		public PlayerControl target;
-		private bool wereShadowsEnabled = false;
 
 		private void OnPlayerDisconnect(ClientData client, DisconnectReasons reason)
 		{
@@ -30,7 +29,6 @@ namespace HydraMenu.modules.visuals
 			FollowerCamera camera = Camera.main.GetComponent<FollowerCamera>();
 			camera.SetTarget(target);
 
-			wereShadowsEnabled = HudManager.Instance.ShadowQuad.gameObject.active;
 			HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
 
 			EventCoordinator.OnPlayerDisconnect += OnPlayerDisconnect;
@@ -38,12 +36,13 @@ namespace HydraMenu.modules.visuals
 
 		protected override void OnDisable()
 		{
-			if(PlayerControl.LocalPlayer != null)
+			if(PlayerControl.LocalPlayer != null || PlayerControl.LocalPlayer.Data == null)
 			{
 				FollowerCamera camera = Camera.main.GetComponent<FollowerCamera>();
 				camera.SetTarget(PlayerControl.LocalPlayer);
 
-				if(wereShadowsEnabled) HudManager.Instance.ShadowQuad.gameObject.SetActive(true);
+				bool shouldBeEnabled = !RoleManager.IsGhostRole(PlayerControl.LocalPlayer.Data.RoleType);
+				HudManager.Instance.ShadowQuad.gameObject.SetActive(shouldBeEnabled);
 			}
 
 			EventCoordinator.OnPlayerDisconnect -= OnPlayerDisconnect;
