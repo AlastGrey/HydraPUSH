@@ -36,7 +36,7 @@ namespace HydraMenu.modules.visuals
 
 		protected override void OnDisable()
 		{
-			if(PlayerControl.LocalPlayer != null || PlayerControl.LocalPlayer.Data == null)
+			if(PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.Data != null)
 			{
 				FollowerCamera camera = Camera.main.GetComponent<FollowerCamera>();
 				camera.SetTarget(PlayerControl.LocalPlayer);
