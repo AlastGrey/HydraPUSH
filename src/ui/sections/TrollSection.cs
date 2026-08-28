@@ -24,6 +24,7 @@ namespace HydraMenu.ui.sections
 				GUILayout.Label("You are not currently in a game, these options will not work.");
 			}
 
+			ModuleManager.crashLobby.Enabled = GUILayout.Toggle(ModuleManager.crashLobby.Enabled, "Queue Lobby Crash");
 			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies", PlayerControl.LocalPlayer, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.autoTriggerSpores.Enabled = GUILayout.Toggle(Hydra.routines.autoTriggerSpores.Enabled, "Auto Trigger Spores");
 			ModuleManager.disableCameras.Enabled = GUILayout.Toggle(ModuleManager.disableCameras.Enabled, "Disable Security Cameras");
