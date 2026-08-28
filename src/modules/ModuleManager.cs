@@ -25,6 +25,7 @@ namespace HydraMenu.modules
 		public static NoKillCooldown noKillCooldown = new NoKillCooldown();
 
 		// Protections
+		public static AntiCrash antiCrash = new AntiCrash();
 		public static AntiKick antiKick = new AntiKick();
 		public static AntiOverload antiOverload = new AntiOverload();
 		public static BlockServerTeleports blockServerTeleports = new BlockServerTeleports();
@@ -86,6 +87,7 @@ namespace HydraMenu.modules
 				flipSkeld,
 				noKillCooldown,
 
+				antiCrash,
 				antiKick,
 				antiOverload,
 				blockServerTeleports,

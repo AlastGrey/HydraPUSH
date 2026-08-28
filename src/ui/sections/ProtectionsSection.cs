@@ -16,6 +16,8 @@ namespace HydraMenu.ui.sections
 			ModuleManager.blockUnauthorizedUpdates.Enabled = GUILayout.Toggle(ModuleManager.blockUnauthorizedUpdates.Enabled, "Block unauthorized system updates");
 			ModuleManager.bypassShapeshiftRatelimits.Enabled = GUILayout.Toggle(ModuleManager.bypassShapeshiftRatelimits.Enabled, "Bypass ratelimits for Shapeshift RPC");
 
+			ModuleManager.antiCrash.Enabled = GUILayout.Toggle(ModuleManager.antiCrash.Enabled, "Protect against ReportDeadBody lobby crash exploit");
+
 			// Overloads
 			GUILayout.Space(5);
 			GUILayout.Label("Anti Overload:");
