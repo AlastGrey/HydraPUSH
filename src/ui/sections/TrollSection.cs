@@ -1,7 +1,7 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using HydraMenu.assets;
-using HydraMenu.features;
+using HydraMenu.modules;
 using HydraMenu.network;
 using System;
 using System.Collections;
@@ -10,12 +10,12 @@ using UnityEngine;
 
 namespace HydraMenu.ui.sections
 {
-	internal class TrollSection : ISection
+	internal class TrollSection : Section
 	{
 		public TrollSection() : base("Troll") { }
 
-		public int selectedVent = 0;
-		public System.Random rnd = new System.Random();
+		private int selectedVent = 0;
+		private readonly System.Random rnd = new System.Random();
 
 		public override void Render()
 		{
@@ -24,10 +24,11 @@ namespace HydraMenu.ui.sections
 				GUILayout.Label("You are not currently in a game, these options will not work.");
 			}
 
-			Troll.AutoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies", PlayerControl.LocalPlayer, ref Troll.AutoReportBodies.source);
+			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies", PlayerControl.LocalPlayer, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.autoTriggerSpores.Enabled = GUILayout.Toggle(Hydra.routines.autoTriggerSpores.Enabled, "Auto Trigger Spores");
-			Troll.BlockSabotages.Enabled = GUILayout.Toggle(Troll.BlockSabotages.Enabled, "Block Sabotages");
-			Troll.BlockVenting.Enabled = GUILayout.Toggle(Troll.BlockVenting.Enabled, "Disable Vents");
+			ModuleManager.disableCameras.Enabled = GUILayout.Toggle(ModuleManager.disableCameras.Enabled, "Disable Security Cameras");
+			ModuleManager.disableSabotages.Enabled = GUILayout.Toggle(ModuleManager.disableSabotages.Enabled, "Disable Sabotages");
+			ModuleManager.disableVents.Enabled = GUILayout.Toggle(ModuleManager.disableVents.Enabled, "Disable Vents");
 
 			if(GUILayout.Button("Kick All Players"))
 			{
@@ -116,8 +117,15 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Door Troller:");
 			Hydra.routines.doorTroller.Enabled = GUILayout.Toggle(Hydra.routines.doorTroller.Enabled, "Enabled");
 
-			GUILayout.Label($"Lock and Unlock Delay: {Hydra.routines.doorTroller.lockAndUnlockDelay:F2}s");
-			Hydra.routines.doorTroller.lockAndUnlockDelay = GUILayout.HorizontalSlider(Hydra.routines.doorTroller.lockAndUnlockDelay, 0.1f, 2.0f);
+			GUILayout.Label($"Lock and Unlock Delay: {Hydra.routines.doorTroller.LockAndUnlockDelay:F2}s");
+			Hydra.routines.doorTroller.LockAndUnlockDelay = GUILayout.HorizontalSlider(Hydra.routines.doorTroller.LockAndUnlockDelay, 0.1f, 2.0f);
+
+			GUILayout.Space(5);
+			GUILayout.Label("Auto Expose Impostors:");
+			ModuleManager.autoExposeImpostors.Enabled = GUILayout.Toggle(ModuleManager.autoExposeImpostors.Enabled, "Enabled");
+			ModuleManager.autoExposeImpostors.ExposeOnMurder = GUILayout.Toggle(ModuleManager.autoExposeImpostors.ExposeOnMurder, "Expose On Murder");
+			ModuleManager.autoExposeImpostors.ExposeOnShapeshift = GUILayout.Toggle(ModuleManager.autoExposeImpostors.ExposeOnShapeshift, "Expose On Shapeshift");
+			ModuleManager.autoExposeImpostors.ExposeOnPhantom = GUILayout.Toggle(ModuleManager.autoExposeImpostors.ExposeOnPhantom, "Expose On Phantom");
 		}
 
 		// In Hide and Seek, completing a task will reduce the HnS hide timer depending on the length of the task (short, common, or long)

@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using HydraMenu.features;
 using HydraMenu.network;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +10,7 @@ namespace HydraMenu
 		// This exists for the same reason as why the UpdateSystemsDirectly option for sabotages exist
 		public static bool UseSnapToRPC { get; set; } = true;
 
-		public static Dictionary<string, Vector2> skeldTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> skeldTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Cafeteria", new Vector2(-0.78f, 2.48f) },
 			{ "Weapons", new Vector2(8.04f, 1.24f) },
@@ -29,7 +28,7 @@ namespace HydraMenu
 			{ "Reactor", new Vector2(-20.53f, -5.39f) },
 		};
 
-		public static Dictionary<string, Vector2> miraTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> miraTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Launchpad", new Vector2(-4.43f, 1.98f) },
 			{ "Medbay", new Vector2(14.58f, 0.33f) },
@@ -46,7 +45,7 @@ namespace HydraMenu
 			{ "Weapons", new Vector2(19.94f, -1.96f) },
 		};
 
-		public static Dictionary<string, Vector2> polusTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> polusTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Dropship", new Vector2(16.61f, -1.17f) },
 			{ "Storage", new Vector2(20.35f, -11.46f) },
@@ -62,7 +61,7 @@ namespace HydraMenu
 			{ "Specimen", new Vector2(36.78f, -19.28f) }
 		};
 
-		public static Dictionary<string, Vector2> airshipTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> airshipTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Engine Room", new Vector2(-0.73f, 0.60f) },
 			{ "Communications", new Vector2(-13.03f, 1.31f ) },
@@ -84,7 +83,7 @@ namespace HydraMenu
 			{ "Meeting Room", new Vector2(11.03f, 16.06f ) },
 		};
 
-		public static Dictionary<string, Vector2> fungleTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> fungleTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Meeting Room", new Vector2(-3.08f, -0.41f) },
 			{ "The Dorm", new Vector2(1.66f, -1.53f) },
@@ -103,7 +102,7 @@ namespace HydraMenu
 			{ "Dock", new Vector2(-23.00f, -7.16f) },
 		};
 
-		public static Dictionary<string, Vector2> dleksTeleportLocations = new Dictionary<string, Vector2>()
+		public static readonly Dictionary<string, Vector2> dleksTeleportLocations = new Dictionary<string, Vector2>()
 		{
 			{ "Cafeteria", new Vector2(0.78f, 2.48f) },
 			{ "Weapons", new Vector2(-8.04f, 1.24f) },
@@ -120,6 +119,8 @@ namespace HydraMenu
 			{ "Security", new Vector2(12.81f, -3.01f) },
 			{ "Reactor", new Vector2(20.53f, -5.39f) },
 		};
+
+		public static readonly Dictionary<PlayerControl, ushort> VentSeqIds = new Dictionary<PlayerControl, ushort>();
 
 		public static Dictionary<string, Vector2> GetTeleportLocations()
 		{
@@ -184,19 +185,19 @@ namespace HydraMenu
 				return;
 			}
 
-			if(!Troll.VentSeqIds.ContainsKey(player))
+			if(!VentSeqIds.ContainsKey(player))
 			{
 				// High enough value to supersede the actual sequence ID
-				Troll.VentSeqIds.Add(player, 10000);
+				VentSeqIds.Add(player, 10000);
 			}
 
 			MessageWriter enterVent = MessageWriter.Get(SendOption.None);
-			enterVent.Write(++Troll.VentSeqIds[player]);
+			enterVent.Write(++VentSeqIds[player]);
 			enterVent.Write((byte)VentilationSystem.Operation.Enter);
 			enterVent.Write((byte)ventId);
 
 			MessageWriter bootFromVent = MessageWriter.Get(SendOption.None);
-			bootFromVent.Write(++Troll.VentSeqIds[player]);
+			bootFromVent.Write(++VentSeqIds[player]);
 			bootFromVent.Write((byte)VentilationSystem.Operation.BootImpostors);
 			bootFromVent.Write((byte)ventId);
 

@@ -1,5 +1,5 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
-using HydraMenu.features;
+using HydraMenu.modules;
 using HydraMenu.network;
 using InnerNet;
 using System;
@@ -10,7 +10,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace HydraMenu.ui.sections
 {
-	internal class HostSection : ISection
+	internal class HostSection : Section
 	{
 		public HostSection() : base("Host") { }
 
@@ -28,19 +28,17 @@ namespace HydraMenu.ui.sections
 				GUILayout.Label("You are not the host of the current lobby. Using these options will either do nothing or get you banned by the anticheat");
 			}
 
-			Host.BanMidGame.Enabled = GUILayout.Toggle(Host.BanMidGame.Enabled, "Be able to ban players mid-game");
+			ModuleManager.banMidGame.Enabled = GUILayout.Toggle(ModuleManager.banMidGame.Enabled, "Be able to ban players mid-game");
 
-			Host.FlippedSkeld = GUILayout.Toggle(Host.FlippedSkeld, "Use Flipped Skeld Map");
+			ModuleManager.flipSkeld.Enabled = GUILayout.Toggle(ModuleManager.flipSkeld.Enabled, "Use Flipped Skeld Map");
 
-			Host.DisableSabotages.Enabled = GUILayout.Toggle(Host.DisableSabotages.Enabled, "Disable Sabotages");
-			Host.DisableCloseDoors.Enabled = GUILayout.Toggle(Host.DisableCloseDoors.Enabled, "Disable Close Doors");
-			Host.DisableCameras.Enabled = GUILayout.Toggle(Host.DisableCameras.Enabled, "Disable Security Cameras");
-			Host.DisableGameEnd.Enabled = GUILayout.Toggle(Host.DisableGameEnd.Enabled, "Disable Game End");
-			Host.NoKillCooldown.Enabled = GUILayout.Toggle(Host.NoKillCooldown.Enabled, "No Kill Cooldown");
+			ModuleManager.disableCloseDoors.Enabled = GUILayout.Toggle(ModuleManager.disableCloseDoors.Enabled, "Disable Close Doors");
+			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
+			ModuleManager.noKillCooldown.Enabled = GUILayout.Toggle(ModuleManager.noKillCooldown.Enabled, "No Kill Cooldown");
 
 			GUILayout.BeginHorizontal();
-			Host.BlockLowLevels.Enabled = GUILayout.Toggle(Host.BlockLowLevels.Enabled, $"Kick players with less than {Host.BlockLowLevels.MinLevel} levels");
-			Host.BlockLowLevels.MinLevel = (uint)GUILayout.HorizontalSlider(Host.BlockLowLevels.MinLevel, 0, 100);
+			ModuleManager.blockLowLevels.Enabled = GUILayout.Toggle(ModuleManager.blockLowLevels.Enabled, $"Kick players with less than {ModuleManager.blockLowLevels.MinLevel} levels");
+			ModuleManager.blockLowLevels.MinLevel = (uint)GUILayout.HorizontalSlider(ModuleManager.blockLowLevels.MinLevel, 0, 100);
 			GUILayout.EndHorizontal();
 
 			if(GUILayout.Button("Force Start Game"))
@@ -57,7 +55,7 @@ namespace HydraMenu.ui.sections
 			if(GUILayout.Button("Force Crewmate Victory"))
 			{
 				// Just in case the user has this enabled
-				Host.DisableGameEnd.Enabled = false;
+				ModuleManager.disableGameEnd.Enabled = false;
 
 				GameManager.Instance.RpcEndGame(GameOverReason.CrewmatesByTask, false);
 				Hydra.notifications.Send("Game Finished", "You ended the game with a crewmate victory.", 5);
@@ -66,7 +64,7 @@ namespace HydraMenu.ui.sections
 			if(GUILayout.Button("Force Imposter Victory"))
 			{
 				// Just in case the user has this enabled
-				Host.DisableGameEnd.Enabled = false;
+				ModuleManager.disableGameEnd.Enabled = false;
 
 				GameManager.Instance.RpcEndGame(GameOverReason.ImpostorsByKill, false);
 				Hydra.notifications.Send("Game Finished", "You ended the game with an imposter victory.", 5);
@@ -121,13 +119,13 @@ namespace HydraMenu.ui.sections
 
 			GUILayout.Space(5);
 			GUILayout.Label("Assign roles for next round:");
-			Host.AlwaysImposter.Enabled = GUILayout.Toggle(Host.AlwaysImposter.Enabled, "Enabled");
-			GUILayout.Label($"Role to assign: {Host.AlwaysImposter.assignedRole}");
-			Host.AlwaysImposter.assignedRole = Controls.HorizontalRoleSlider(Host.AlwaysImposter.assignedRole);
+			ModuleManager.assignRoles.Enabled = GUILayout.Toggle(ModuleManager.assignRoles.Enabled, "Enabled");
+			GUILayout.Label($"Role to assign: {ModuleManager.assignRoles.AssignedRole}");
+			ModuleManager.assignRoles.AssignedRole = Controls.HorizontalRoleSlider(ModuleManager.assignRoles.AssignedRole);
 
 			GUILayout.Space(5);
 			GUILayout.Label("Meeting Controls:");
-			Host.DisableMeetings.Enabled = GUILayout.Toggle(Host.DisableMeetings.Enabled, "Disable Meetings");
+			ModuleManager.disableMeetings.Enabled = GUILayout.Toggle(ModuleManager.disableMeetings.Enabled, "Disable Meetings");
 			Hydra.routines.reportBodySpam.Enabled = GUILayout.Toggle(Hydra.routines.reportBodySpam.Enabled, "Spam Report Bodies");
 
 			if(GUILayout.Button("Close Meeting"))
@@ -185,8 +183,8 @@ namespace HydraMenu.ui.sections
 
 			Hydra.routines.discoHost.Enabled = Controls.GlobalPlayerSpecificToggle("Disco Party", ref Hydra.routines.discoHost.targets);
 
-			GUILayout.Label($"Color randomization delay: {Hydra.routines.discoHost.randomizationDelay:F2}s");
-			Hydra.routines.discoHost.randomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.randomizationDelay, 0.1f, 2.0f);
+			GUILayout.Label($"Color randomization delay: {Hydra.routines.discoHost.RandomizationDelay:F2}s");
+			Hydra.routines.discoHost.RandomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.RandomizationDelay, 0.1f, 2.0f);
 		}
 
 		private static void KillAllPlayers()

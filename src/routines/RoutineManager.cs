@@ -1,4 +1,7 @@
 ﻿using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using UnityEngine;
 
 namespace HydraMenu.routines
@@ -14,7 +17,7 @@ namespace HydraMenu.routines
 		public ReportBodySpam reportBodySpam = new ReportBodySpam();
 		public TeleportSpammer teleportSpammer = new TeleportSpammer();
 
-		public readonly IRoutine[] routineList;
+		public readonly Routine[] routineList;
 
 		public RoutineManager()
 		{
@@ -23,7 +26,7 @@ namespace HydraMenu.routines
 
 		public void Update()
 		{
-			foreach(IRoutine routine in routineList)
+			foreach(Routine routine in routineList)
 			{
 				if(!routine.Enabled) continue;
 
@@ -31,19 +34,32 @@ namespace HydraMenu.routines
 			}
 		}
 
-		[HarmonyPatch(typeof(GameData), nameof(GameData.OnDisconnected))]
-		class DisconnectHandler
+		// Return a dictionary of each routine with its name, and another dictionary with names and values of each property
+		public Dictionary<string, Dictionary<string, JsonElement>> GetConfigData()
 		{
-			static void Prefix()
+			Dictionary<string, Dictionary<string, JsonElement>> routineConfig = new Dictionary<string, Dictionary<string, JsonElement>>();
+
+			foreach(Routine routine in routineList)
 			{
-				Hydra.Log.LogInfo("Player disconnected from the lobby, disabling relevant routines");
+				routineConfig.Add(routine.name, routine.GetConfigData());
+			}
 
-				foreach(IRoutine routine in Hydra.routines.routineList)
+			return routineConfig;
+		}
+
+		public void LoadConfigData(Dictionary<string, Dictionary<string, JsonElement>> routineConfig)
+		{
+			foreach((string routineName, Dictionary<string, JsonElement> configData) in routineConfig)
+			{
+				int routineIndex = Array.FindIndex(routineList, r => r.name == routineName);
+				if(routineIndex == -1)
 				{
-					if(!routine.Enabled) continue;
-
-					routine.OnDisconnect();
+					Hydra.Log.LogWarning($"Config has entry for routine {routineName} when there is no such routine");
+					continue;
 				}
+
+				Routine routine = routineList[routineIndex];
+				routine.LoadConfigData(configData);
 			}
 		}
 	}

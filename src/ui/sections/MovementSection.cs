@@ -1,10 +1,10 @@
-﻿using HydraMenu.features;
+﻿using HydraMenu.modules;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace HydraMenu.ui.sections
 {
-	internal class MovementSection : ISection
+	internal class MovementSection : Section
 	{
 		public MovementSection() : base("Movement") { }
 
@@ -27,8 +27,8 @@ namespace HydraMenu.ui.sections
 				PlayerControl.LocalPlayer.Collider.enabled = !GUILayout.Toggle(!PlayerControl.LocalPlayer.Collider.enabled, "Noclip");
 			}
 
-			GUILayout.Label($"Speed Modifier: {Self.PlayerSpeedModifier.Multiplier:F2}x");
-			Self.PlayerSpeedModifier.Multiplier = GUILayout.HorizontalSlider(Self.PlayerSpeedModifier.Multiplier, 0f, 5f);
+			GUILayout.Label($"Speed Modifier: {ModuleManager.speedModifier.Multiplier:F2}x");
+			ModuleManager.speedModifier.Multiplier = GUILayout.HorizontalSlider(ModuleManager.speedModifier.Multiplier, 0f, 5f);
 
 			Teleporter.UseSnapToRPC = GUILayout.Toggle(Teleporter.UseSnapToRPC, "Use SnapTo RPC For Teleports");
 			GUILayout.Label("Teleport To Location:");

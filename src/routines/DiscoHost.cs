@@ -1,24 +1,25 @@
-﻿using HydraMenu.network;
+﻿using HydraMenu.modules;
+using HydraMenu.network;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace HydraMenu.routines
 {
-	public class DiscoHostRoutine : IRoutine
+	public class DiscoHostRoutine : Routine
 	{
 		public DiscoHostRoutine() : base("DiscoHost") { }
 		public HashSet<int> targets = new HashSet<int>();
 
-		public float randomizationDelay = 0.5f;
+		public float RandomizationDelay { get; set; } = 0.5f;
 		private float timeElapsed = 0f;
 
-		private System.Random rnd = new System.Random();
+		private readonly System.Random rnd = new System.Random();
 
 		public override void Run()
 		{
 			timeElapsed += Time.deltaTime;
-			if(timeElapsed < randomizationDelay) return;
+			if(timeElapsed < RandomizationDelay) return;
 			timeElapsed = 0f;
 
 			List<int> colors = Enumerable.Range(0, 18).ToList();
@@ -48,9 +49,15 @@ namespace HydraMenu.routines
 			batch.FinishBatch();
 		}
 
-		public bool IsGlobal
+		private bool IsGlobal
 		{
 			get { return targets.Count == 1 && targets.Contains(int.MaxValue); }
+		}
+
+		private void OnDisconnect()
+		{
+			Hydra.notifications.Send("Disco Party", "Disco Party was disabled as you left the game.", 10);
+			Enabled = false;
 		}
 
 		protected override void OnEnable()
@@ -68,17 +75,15 @@ namespace HydraMenu.routines
 				Enabled = false;
 				return;
 			}
+
+			EventCoordinator.OnDisconnect += OnDisconnect;
 		}
 
 		protected override void OnDisable()
 		{
 			targets.Clear();
-		}
 
-		public override void OnDisconnect()
-		{
-			Hydra.notifications.Send("Disco Party", "Disco Party was disabled as you left the game.", 10);
-			Enabled = false;
+			EventCoordinator.OnDisconnect -= OnDisconnect;
 		}
 	}
 }

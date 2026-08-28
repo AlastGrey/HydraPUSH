@@ -7,6 +7,7 @@ namespace HydraMenu.ui
 	public class MainUI : MonoBehaviour
 	{
 		// Current window
+		public KeyCode menuKey = KeyCode.Insert;
 		public bool visible = false;
 		public static float scale = 1.0f;
 
@@ -31,7 +32,7 @@ namespace HydraMenu.ui
 		}
 
 		// UI Section Pane
-		private readonly ISection[] sections = { new GeneralSection(), new SelfSection(), new TrollSection(), new SabotageSection(), new HostSection(), new RolesSection(), new PlayersSection(), new MovementSection(), new VisualSection(), new ProtectionsSection(), new AnticheatSection(), new SpooferSection(), new MenuSection() };
+		private readonly Section[] sections = { new GeneralSection(), new SelfSection(), new TrollSection(), new SabotageSection(), new HostSection(), new RolesSection(), new PlayersSection(), new MovementSection(), new VisualSection(), new ProtectionsSection(), new AnticheatSection(), new SpooferSection(), new MenuSection() };
 		public byte activeTab = 0;
 
 		public static Vector2 SectionListSize
@@ -62,10 +63,12 @@ namespace HydraMenu.ui
 
 		public void Update()
 		{
+			Event currentEvent = Event.current;
+			if(currentEvent == null) return;
+
 			// Input::GetKeyDown(KeyCodes.Insert) returns true if you press the dedicated Insert key, but not the numpad Insert key
 			// so we have to rely on Event.current here
-			Event currentEvent = Event.current;
-			if(currentEvent.type == EventType.KeyDown && currentEvent.keyCode == KeyCode.Insert)
+			if(currentEvent.type == EventType.KeyDown && currentEvent.keyCode == menuKey)
 			{
 				visible = !visible;
 			}
@@ -109,7 +112,7 @@ namespace HydraMenu.ui
 
 			for(byte i = 0; i < sections.Length; i++)
 			{
-				ISection section = sections[i];
+				Section section = sections[i];
 
 				// Add the tab to the left-pane
 				RenderTab(i, section);
@@ -166,7 +169,7 @@ namespace HydraMenu.ui
 				mousePos.y <= (windowPosition.y + WindowSize.y);
 		}
 
-		private void RenderTab(byte position, ISection section)
+		private void RenderTab(byte position, Section section)
 		{
 			Rect rect = new Rect(
 				SectionListPosition.x,
@@ -180,6 +183,40 @@ namespace HydraMenu.ui
 			{
 				activeTab = position;
 			}
+		}
+
+		public class MainUIConfig
+		{
+			public KeyCode MenuKey { get; set; }
+			public Styles.UIColors PrimaryColor { get; set; }
+			public float MenuOpacity { get; set; }
+			public float UiScale { get; set; }
+			public bool DisableNotifications { get; set; }
+		}
+
+		public MainUIConfig GetConfigData()
+		{
+			return new MainUIConfig
+			{
+				MenuKey = menuKey,
+				PrimaryColor = Styles.primaryColor,
+				MenuOpacity = Styles.menuOpacity,
+				UiScale = scale,
+				DisableNotifications = Hydra.notifications.disableNotifications
+			};
+		}
+
+		public void LoadConfigData(MainUIConfig config)
+		{
+			if(config.MenuKey != KeyCode.None)
+			{
+				Hydra.mainUI.menuKey = config.MenuKey;
+			}
+
+			Styles.primaryColor = (Styles.UIColors)Math.Clamp((int)config.PrimaryColor, 0, Styles.ColorValues.Count - 1);
+			Styles.menuOpacity = Mathf.Clamp(config.MenuOpacity, 0.0f, 1.0f);
+			scale = Mathf.Clamp(config.UiScale, 0.5f, 2.0f);
+			Hydra.notifications.disableNotifications = config.DisableNotifications;
 		}
 	}
 }

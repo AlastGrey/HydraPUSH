@@ -2,7 +2,7 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HydraMenu.assets;
-using HydraMenu.features;
+using HydraMenu.modules;
 using HydraMenu.network;
 using InnerNet;
 using System;
@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace HydraMenu.ui.sections
 {
-	internal class PlayersSection : ISection
+	internal class PlayersSection : Section
 	{
 		public PlayersSection() : base("Players") { }
 
@@ -155,9 +155,9 @@ namespace HydraMenu.ui.sections
 
 			GUILayout.Label(playerInfo);
 
-			Visuals.SpectatePlayer.Enabled = Controls.PlayerSpecificToggle("Spectate", target, ref Visuals.SpectatePlayer.target);
+			ModuleManager.spectatePlayer.Enabled = Controls.PlayerSpecificToggle("Spectate", target, ref ModuleManager.spectatePlayer.target);
 			Hydra.routines.petPlayer.Enabled = Controls.PlayerSpecificToggle("Pet Player", target, ref Hydra.routines.petPlayer.target);
-			Hydra.routines.playerFollower.Enabled = Controls.PlayerSpecificToggle("Follow", target, ref Hydra.routines.playerFollower.following);
+			Hydra.routines.playerFollower.Enabled = Controls.PlayerSpecificToggle("Follow", target, ref Hydra.routines.playerFollower.target);
 			Hydra.routines.jailPlayer.Enabled = Controls.PlayerSpecificToggle("Place in Jail", target, ref Hydra.routines.jailPlayer.targets);
 
 			GUILayout.BeginHorizontal();
@@ -210,7 +210,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.Space(5);
 			GUILayout.Label("Host Only Features:" + (AmongUsClient.Instance.AmHost ? "" : "\n(Using these will get you kicked!)"));
 
-			Troll.AutoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies As", target, ref Troll.AutoReportBodies.source);
+			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies As", target, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.discoHost.Enabled = Controls.PlayerSpecificToggle("Disco Mode", target, ref Hydra.routines.discoHost.targets);
 
 			if(GUILayout.Button("Force Meeting As"))
@@ -438,7 +438,7 @@ namespace HydraMenu.ui.sections
 				yield break;
 			}
 
-			Host.DisableGameEnd.Enabled = true;
+			ModuleManager.disableGameEnd.Enabled = true;
 
 			if(target != PlayerControl.LocalPlayer)
 			{
@@ -457,7 +457,7 @@ namespace HydraMenu.ui.sections
 			// Wait three seconds so all players can see which player we are framing
 			yield return Effects.Wait(3.0f);
 
-			Host.DisableGameEnd.Enabled = false;
+			ModuleManager.disableGameEnd.Enabled = false;
 			Hydra.notifications.Send("Framer", $"Framed {target.Data.PlayerName} for killing all players!");
 		}
 	}

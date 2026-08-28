@@ -1,10 +1,12 @@
 ﻿using Hazel;
+using HydraMenu.modules;
+using InnerNet;
 using UnityEngine;
 
 namespace HydraMenu.routines
 {
 
-	public class PetPlayerRoutine : IRoutine
+	public class PetPlayerRoutine : Routine
 	{
 		public PetPlayerRoutine() : base("PetPlayer") { }
 
@@ -44,12 +46,35 @@ namespace HydraMenu.routines
 			AmongUsClient.Instance.FinishRpcImmediately(writer);
 		}
 
+		private void OnDisconnect()
+		{
+			Hydra.notifications.Send("Pet Player", "Pet Player was disabled as you left the game.", 10);
+			Enabled = false;
+		}
+
+		private void OnPlayerDisconnect(ClientData client, DisconnectReasons reason)
+		{
+			if(client.Character != target) return;
+
+			Hydra.notifications.Send("Pet Player", "Pet Player was disabled as the player you were petting left the game");
+			Enabled = false;
+		}
+
 		protected override void OnEnable()
 		{
+			if(PlayerControl.LocalPlayer == null)
+			{
+				_enabled = false;
+				return;
+			}
+
 			// Attempting to move will result in our petting hand following our movement
 			// To avoid unexpected behavior, we prevent the player from moving
 			PlayerControl.LocalPlayer.moveable = false;
 			PlayerControl.LocalPlayer.NetTransform.body.velocity = Vector2.zero;
+
+			EventCoordinator.OnDisconnect += OnDisconnect;
+			EventCoordinator.OnPlayerDisconnect += OnPlayerDisconnect;
 		}
 
 		protected override void OnDisable()
@@ -61,12 +86,9 @@ namespace HydraMenu.routines
 				PlayerControl.LocalPlayer.moveable = true;
 				PlayerControl.LocalPlayer.MyPhysics.RpcCancelPet();
 			}
-		}
 
-		public override void OnDisconnect()
-		{
-			Hydra.notifications.Send("Pet Player", "Pet Player was disabled as you left the game.", 10);
-			Enabled = false;
+			EventCoordinator.OnDisconnect -= OnDisconnect;
+			EventCoordinator.OnPlayerDisconnect -= OnPlayerDisconnect;
 		}
 	}
 }

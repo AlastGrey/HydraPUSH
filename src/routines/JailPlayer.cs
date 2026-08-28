@@ -1,24 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using HydraMenu.modules;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HydraMenu.routines
 {
 	// This could be implemented as a postfix patch of CustomNetworkTransform::Deserialize or as a routine
 	// It took me a while, but I concluded that using a routine is a more elegant design choice
-	public class JailPlayerRoutine : IRoutine
+	public class JailPlayerRoutine : Routine
 	{
 		public JailPlayerRoutine() : base("JailPlayer") { }
 
 		public HashSet<int> targets = new HashSet<int>();
 
 		// For the sake of performance, only check if players are outside the jail every 500ms
-		public float delay = 0.5f;
+		public readonly float DELAY = 0.5f;
 		private float timeElapsed = 0f;
 
 		public override void Run()
 		{
 			timeElapsed += Time.deltaTime;
-			if(timeElapsed < delay) return;
+			if(timeElapsed < DELAY) return;
 			timeElapsed = 0f;
 
 			GetMapData(out SystemTypes jailRoom, out int ventId);
@@ -93,6 +94,12 @@ namespace HydraMenu.routines
 			}
 		}
 
+		private void OnDisconnect()
+		{
+			Hydra.notifications.Send("Jail Player", "Jail Player has been disabled as you left the game.", 10);
+			Enabled = false;
+		}
+
 		protected override void OnEnable()
 		{
 			if(PlayerControl.LocalPlayer == null || ShipStatus.Instance == null)
@@ -101,17 +108,15 @@ namespace HydraMenu.routines
 				Enabled = false;
 				return;
 			}
+
+			EventCoordinator.OnDisconnect += OnDisconnect;
 		}
 
 		protected override void OnDisable()
 		{
 			targets.Clear();
-		}
 
-		public override void OnDisconnect()
-		{
-			Hydra.notifications.Send("Jail Player", "Jail Player has been disabled as you left the game.", 10);
-			Enabled = false;
+			EventCoordinator.OnDisconnect -= OnDisconnect;
 		}
 	}
 }

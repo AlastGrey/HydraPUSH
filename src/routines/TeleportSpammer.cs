@@ -1,13 +1,14 @@
-﻿using UnityEngine;
+﻿using HydraMenu.modules;
+using UnityEngine;
 
 namespace HydraMenu.routines
 {
-	public class TeleportSpammer : IRoutine
+	public class TeleportSpammer : Routine
 	{
 		public TeleportSpammer() : base("TeleportSpammer") { }
 
-		private System.Random rnd = new System.Random();
-		private float teleportDelay = 0.5f;
+		private readonly System.Random rnd = new System.Random();
+		private readonly float TELEPORT_DELAY = 0.5f;
 		private float timeElapsed = 0f;
 
 		public override void Run()
@@ -15,7 +16,7 @@ namespace HydraMenu.routines
 			if(ShipStatus.Instance == null) return;
 
 			timeElapsed += Time.deltaTime;
-			if(timeElapsed < teleportDelay) return;
+			if(timeElapsed < TELEPORT_DELAY) return;
 			timeElapsed = 0f;
 
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
@@ -28,6 +29,12 @@ namespace HydraMenu.routines
 			}
 		}
 
+		private void OnDisconnect()
+		{
+			Hydra.notifications.Send("Teleport Spammer", "Teleport Spammer was disabled as you left the game.", 10);
+			Enabled = false;
+		}
+
 		protected override void OnEnable()
 		{
 			if(PlayerControl.LocalPlayer == null || ShipStatus.Instance == null)
@@ -36,12 +43,13 @@ namespace HydraMenu.routines
 				Enabled = false;
 				return;
 			}
+
+			EventCoordinator.OnDisconnect += OnDisconnect;
 		}
 
-		public override void OnDisconnect()
+		protected override void OnDisable()
 		{
-			Hydra.notifications.Send("Teleport Spammer", "Teleport Spammer was disabled as you left the game.", 10);
-			Enabled = false;
+			EventCoordinator.OnDisconnect -= OnDisconnect;
 		}
 	}
 }
