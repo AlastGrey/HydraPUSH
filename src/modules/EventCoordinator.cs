@@ -16,6 +16,7 @@ namespace HydraMenu.modules
 		public static event Action OnMeetingEnd;
 		public static event Action<Minigame> OnOpenMinigame;
 		public static event Action<Ladder> OnUseLadder;
+		public static event Action<ZiplineConsole> OnUseZipline;
 
 		// Player Events
 		public static event Action<PlayerControl, ClientData> OnPlayerJoin;
@@ -91,12 +92,25 @@ namespace HydraMenu.modules
 		{
 			static void Postfix(Ladder __instance)
 			{
-				Hydra.Log.LogMessage($"Used ladder");
+				Hydra.Log.LogMessage($"Ladder {__instance.Id} was used");
 
 				PublishEvent(OnUseLadder, __instance.Destination);
 			}
 		}
 
+		// This function is late enough to allow us to modify the ladder cooldown without the game overriding it
+		// There is a ZiplineConsole::SetDestinationCooldown method, but we cannot patch it as it is inlined
+		[HarmonyPatch(typeof(ZiplineBehaviour), nameof(ZiplineBehaviour.ResetTarget))]
+		class ZiplineUsed
+		{
+			static void Postfix(ZiplineBehaviour __instance)
+			{
+				ZiplineConsole console = __instance.lastUsedConsole;
+				Hydra.Log.LogMessage("Zipline " + (__instance.lastUsedConsole.atTop ? "at top" : "at bottom") + " was used");
+
+				PublishEvent(OnUseZipline, console);
+			}
+		}
 		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
 		class OnJoin
 		{

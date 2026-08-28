@@ -43,6 +43,7 @@ namespace HydraMenu.modules
 		public static AlwaysShowTaskAnimations alwaysShowTaskAnimations = new AlwaysShowTaskAnimations();
 		public static Immortality immortality = new Immortality();
 		public static NoLadderCooldown noLadderCooldown = new NoLadderCooldown();
+		public static NoZiplineCooldown noZiplineCooldown = new NoZiplineCooldown();
 		public static SpeedModifier speedModifier = new SpeedModifier();
 		public static UnlimitedMeetings unlimitedMeetings = new UnlimitedMeetings();
 		public static UpdateStatsFreeplay updateStatsFreeplay = new UpdateStatsFreeplay();
@@ -100,6 +101,7 @@ namespace HydraMenu.modules
 				alwaysShowTaskAnimations,
 				immortality,
 				noLadderCooldown,
+				noZiplineCooldown,
 				speedModifier,
 				unlimitedMeetings,
 				updateStatsFreeplay,
