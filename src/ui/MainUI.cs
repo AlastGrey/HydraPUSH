@@ -102,13 +102,13 @@ namespace HydraMenu.ui
 			}
 		}
 
-		private bool IsInHeader(Vector2 mousePos)
+		private bool IsInBox(Vector2 mousePos)
 		{
 			return
 				mousePos.x >= windowPosition.x &&
 				mousePos.x <= (windowPosition.x + WindowSize.x) &&
 				mousePos.y >= windowPosition.y &&
-				mousePos.y <= (windowPosition.y + HeaderSize.y);
+				mousePos.y <= (windowPosition.y + WindowSize.y);
 		}
 
 		public void OnGUI()
@@ -155,7 +155,7 @@ namespace HydraMenu.ui
 				// I tried using currentEvent.delta to get the delta between the last mouse position and the current one,
 				// however I noticed it would 'skip' quite frequently resulting in the window box not properly lining up where it should actually be dragged
 				case EventType.MouseDown:
-					if(!IsInHeader(mousePos)) break;
+					if(!IsInBox(mousePos)) break;
 
 					isDragging = true;
 					mouseDelta = currentEvent.mousePosition - windowPosition;
