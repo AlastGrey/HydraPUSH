@@ -6,23 +6,30 @@ namespace HydraMenu.modules.visuals
 	{
 		public Fullbright() : base("Fullbright") { }
 
-		private static Fullbright Instance
+		private void OnGameLoad()
 		{
-			get { return ModuleManager.fullbright; }
+			HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
 		}
 
-		// Is there a better way of implementing Fullbright?
-		// This current method does not allow you to see through walls due to shadows
-		[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CalculateLightRadius))]
-		class LightRadius
+		protected override void OnEnable()
 		{
-			static bool Prefix(ref float __result)
+			if(PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.Data != null)
 			{
-				if(!Instance.Enabled) return true;
-
-				__result = 1000f;
-				return false;
+				HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
 			}
+
+			EventCoordinator.OnGameLoad += OnGameLoad;
+		}
+
+		protected override void OnDisable()
+		{
+			if(PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.Data != null)
+			{
+				bool shouldBeEnabled = !ModuleManager.spectatePlayer.Enabled && !RoleManager.IsGhostRole(PlayerControl.LocalPlayer.Data.RoleType);
+				HudManager.Instance.ShadowQuad.gameObject.SetActive(shouldBeEnabled);
+			}
+
+			EventCoordinator.OnGameLoad -= OnGameLoad;
 		}
 	}
 }

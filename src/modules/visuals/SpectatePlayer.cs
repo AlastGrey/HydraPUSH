@@ -41,7 +41,7 @@ namespace HydraMenu.modules.visuals
 				FollowerCamera camera = Camera.main.GetComponent<FollowerCamera>();
 				camera.SetTarget(PlayerControl.LocalPlayer);
 
-				bool shouldBeEnabled = !RoleManager.IsGhostRole(PlayerControl.LocalPlayer.Data.RoleType);
+				bool shouldBeEnabled = !ModuleManager.fullbright.Enabled && !RoleManager.IsGhostRole(PlayerControl.LocalPlayer.Data.RoleType);
 				HudManager.Instance.ShadowQuad.gameObject.SetActive(shouldBeEnabled);
 			}
 
