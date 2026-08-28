@@ -162,8 +162,7 @@ namespace HydraMenu.ui
 					break;
 
 				case EventType.MouseDrag:
-					if(!isDragging) break;
-
+				if(!isDragging || GUIUtility.hotControl != 0) break;
 					windowPosition.x = mousePos.x - mouseDelta.x;
 					windowPosition.y = mousePos.y - mouseDelta.y;
 					break;
