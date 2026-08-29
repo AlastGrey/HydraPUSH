@@ -377,6 +377,23 @@ namespace HydraMenu.network
 			msgCount++;
 		}
 
+		public void QueueUseZipline(PlayerControl source, ZiplineBehaviour zipline, bool fromTop)
+		{
+			if(IsGlobal || AmTarget)
+			{
+				zipline.Use(source, fromTop);
+				if(AmTarget) return;
+			}
+
+			writer.StartMessage((byte)GameDataTypes.RpcFlag);
+			writer.WritePacked(source.NetId);
+			writer.Write((byte)RpcCalls.UseZipline);
+			writer.Write(fromTop);
+			writer.EndMessage();
+
+			msgCount++;
+		}
+
 		public void QueueShapeshift(PlayerControl source, PlayerControl target, bool shouldAnimate)
 		{
 			if(IsGlobal || AmTarget)

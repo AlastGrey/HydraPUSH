@@ -160,6 +160,7 @@ namespace HydraMenu.ui.sections
 			Hydra.routines.playerFollower.Enabled = Controls.PlayerSpecificToggle("Follow", target, ref Hydra.routines.playerFollower.target);
 			Hydra.routines.jailPlayer.Enabled = Controls.PlayerSpecificToggle("Place in Jail", target, ref Hydra.routines.jailPlayer.targets);
 			Hydra.routines.teleportSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Teleports", target, ref Hydra.routines.teleportSpammer.targets);
+			Hydra.routines.ziplineSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Zipline", target, ref Hydra.routines.ziplineSpammer.targets);
 
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Teleport"))
