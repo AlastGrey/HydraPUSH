@@ -14,18 +14,18 @@ namespace HydraMenu.ui
 		public static readonly List<RoleTypes> RolesList = new List<RoleTypes>()
 		{
 			RoleTypes.Crewmate,
-			RoleTypes.Impostor,
 			RoleTypes.Scientist,
 			RoleTypes.Engineer,
-			RoleTypes.GuardianAngel,
-			RoleTypes.Shapeshifter,
 			RoleTypes.Noisemaker,
-			RoleTypes.Phantom,
 			RoleTypes.Tracker,
 			RoleTypes.Detective,
-			RoleTypes.Viper,
 			RoleTypes.Judge,
+			RoleTypes.Impostor,
+			RoleTypes.Shapeshifter,
+			RoleTypes.Phantom,
+			RoleTypes.Viper,
 			RoleTypes.CrewmateGhost,
+			RoleTypes.GuardianAngel,
 			RoleTypes.ImpostorGhost
 		};
 
