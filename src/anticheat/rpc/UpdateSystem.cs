@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static HydraMenu.network.Constants;
 
 namespace HydraMenu.anticheat.rpc
 {
@@ -20,10 +21,11 @@ namespace HydraMenu.anticheat.rpc
 
 		private static readonly Dictionary<Il2CppSystem.Type, Func<PlayerControl, MessageReader, bool>> systemHandlers = new Dictionary<Il2CppSystem.Type, Func<PlayerControl, MessageReader, bool>>()
 		{
-			{ Il2CppType.From(typeof(SwitchSystem)), ValidateSwitchSystem },
+			{ Il2CppType.From(typeof(HudOverrideSystemType)), ValidateHudOverrideSystem },
 			{ Il2CppType.From(typeof(MushroomMixupSabotageSystem)), ValidateMushroomMixupSystem },
 			{ Il2CppType.From(typeof(ReactorSystemType)), ValidateReactorSystem},
-			{ Il2CppType.From(typeof(SabotageSystemType)), ValidateSabotageSystem }
+			{ Il2CppType.From(typeof(SabotageSystemType)), ValidateSabotageSystem },
+			{ Il2CppType.From(typeof(SwitchSystem)), ValidateSwitchSystem }
 		};
 
 		public override bool Validate(PlayerControl player, MessageReader reader)
@@ -53,6 +55,19 @@ namespace HydraMenu.anticheat.rpc
 			return handler(player, reader);
 		}
 
+		private static bool ValidateHudOverrideSystem(PlayerControl player, MessageReader reader)
+		{
+			HudOverrideSystemOperation operation = (HudOverrideSystemOperation)reader.ReadByte();
+
+			if(operation.HasFlag(HudOverrideSystemOperation.Sabotage))
+			{
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force call the Reactor sabotage");
+				return false;
+			}
+
+			return true;
+		}
+
 		// The Mushroom Mixup system is only updated in the SabotageSystemType::Update function by the host. It should never be sent by a player
 		private static bool ValidateMushroomMixupSystem(PlayerControl player, MessageReader reader)
 		{
@@ -64,21 +79,21 @@ namespace HydraMenu.anticheat.rpc
 
 		private static bool ValidateReactorSystem(PlayerControl player, MessageReader reader)
 		{
-			byte operation = reader.ReadByte();
+			ReactorSystemOperation operation = (ReactorSystemOperation)reader.ReadByte();
 
-			switch(operation)
+			if(operation.HasFlag(ReactorSystemOperation.Fix))
 			{
-				case 16:
-					Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to forcefully fix the Reactor sabotage");
-					return false;
-
-				case 128:
-					Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force call the Reactor sabotage");
-					return false;
-
-				default:
-					return true;
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to forcefully fix the Reactor sabotage");
+				return false;
 			}
+
+			if(operation.HasFlag(ReactorSystemOperation.Sabotage))
+			{
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force call the Reactor sabotage");
+				return false;
+			}
+
+			return true;
 		}
 
 		private static bool ValidateSabotageSystem(PlayerControl player, MessageReader reader)

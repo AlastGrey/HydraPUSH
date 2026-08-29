@@ -113,6 +113,8 @@ namespace HydraMenu.modules
 			static void Postfix(ZiplineBehaviour __instance)
 			{
 				ZiplineConsole console = __instance.lastUsedConsole;
+				if(console == null) return;
+
 				Hydra.Log.LogMessage("Zipline " + (__instance.lastUsedConsole.atTop ? "at top" : "at bottom") + " was used");
 
 				PublishEvent(OnUseZipline, console);
