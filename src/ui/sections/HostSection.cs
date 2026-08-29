@@ -4,6 +4,7 @@ using HydraMenu.network;
 using InnerNet;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -16,6 +17,9 @@ namespace HydraMenu.ui.sections
 
 		private byte selectedMap = 0;
 		private Controls.PlayerColors selectedColor = 0;
+
+		public static Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
+		public static Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
 
 		public override void Render()
 		{
@@ -80,14 +84,16 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Map"))
 			{
-				if(ShipStatus.Instance != null)
+				if(shipList.Count != 0)
 				{
-					ShipStatus.Instance.Despawn();
+					InnerNetObject ship = shipList.Dequeue();
+					ship.Despawn();
+
 					Hydra.notifications.Send("Game Map", "The current map has been despawned.", 5);
 				}
 				else
 				{
-					Hydra.notifications.Send("Game Map", "The game map has already been despawned.", 5);
+					Hydra.notifications.Send("Game Map", "The game map has already been despawned.", 10);
 				}
 			}
 
@@ -100,14 +106,16 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Lobby"))
 			{
-				if(LobbyBehaviour.Instance != null)
+				if(lobbyList.Count > 0)
 				{
-					LobbyBehaviour.Instance.Despawn();
+					InnerNetObject lobby = lobbyList.Dequeue();
+					lobby.Despawn();
+
 					Hydra.notifications.Send("Lobby Map", "The lobby map has been despawned.", 5);
 				}
 				else
 				{
-					Hydra.notifications.Send("Lobby Map", "The lobby map has already been despawned.", 5);
+					Hydra.notifications.Send("Lobby Map", "The lobby map has already been despawned.", 10);
 				}
 			}
 

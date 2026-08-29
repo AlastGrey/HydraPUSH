@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Hazel;
+using HydraMenu.ui.sections;
+using Il2CppInterop.Runtime;
 using InnerNet;
 using System;
 using System.Collections.Generic;
@@ -35,6 +37,11 @@ namespace HydraMenu.modules
 		public static event Action<PlayerControl> OnPlayerPhantom;
 
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
+
+		// Network Events
+		public static event Action<InnerNetObject> OnNetObjectSpawn;
+
+		private static readonly HashSet<Il2CppSystem.Type> ShipNetObjects = [Il2CppType.From(typeof(ShipStatus)), Il2CppType.From(typeof(SkeldShipStatus)), Il2CppType.From(typeof(MiraShipStatus)), Il2CppType.From(typeof(PolusShipStatus)), Il2CppType.From(typeof(AirshipStatus)), Il2CppType.From(typeof(FungleShipStatus))];
 
 		[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGame))]
 		class GameStart
@@ -348,6 +355,29 @@ namespace HydraMenu.modules
 				}
 
 				PublishEvent(OnPlayerVotekick, source, target);
+			}
+		}
+
+		[HarmonyPatch(typeof(InnerNetObjectCollection), nameof(InnerNetObjectCollection.TryAddNetObject))]
+		class NetObjectAdd
+		{
+			static void Postfix(InnerNetObject obj)
+			{
+				if(obj == null) return;
+
+				Il2CppSystem.Type type = obj.GetIl2CppType();
+
+				Hydra.Log.LogMessage($"Net object {type.FullName} was spawned");
+				if(type == Il2CppType.From(typeof(LobbyBehaviour)))
+				{
+					HostSection.lobbyList.Enqueue(obj);
+				}
+				else if(ShipNetObjects.Contains(type))
+				{
+					HostSection.shipList.Enqueue(obj);
+				}
+
+				PublishEvent(OnNetObjectSpawn, obj);
 			}
 		}
 
