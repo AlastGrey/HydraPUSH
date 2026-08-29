@@ -15,6 +15,7 @@ namespace HydraMenu.routines
 		public readonly PlayerFollowerRoutine playerFollower = new PlayerFollowerRoutine();
 		public readonly ReportBodySpam reportBodySpam = new ReportBodySpam();
 		public readonly TeleportSpammer teleportSpammer = new TeleportSpammer();
+		public readonly VoteSpammer voteSpammer = new VoteSpammer();
 		public readonly ZiplineSpammer ziplineSpammer = new ZiplineSpammer();
 
 		public readonly Routine[] routineList;

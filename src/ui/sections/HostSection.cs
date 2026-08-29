@@ -135,6 +135,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Meeting Controls:");
 			ModuleManager.disableMeetings.Enabled = GUILayout.Toggle(ModuleManager.disableMeetings.Enabled, "Disable Meetings");
 			Hydra.routines.reportBodySpam.Enabled = GUILayout.Toggle(Hydra.routines.reportBodySpam.Enabled, "Spam Report Bodies");
+			Hydra.routines.voteSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Spam Votes", ref Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Close Meeting"))
 			{
