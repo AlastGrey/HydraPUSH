@@ -166,14 +166,14 @@ namespace HydraMenu.modules
 				int oldReadPosition = reader.Position;
 
 				int ventCleans = reader.ReadPackedInt32();
-				if(ventCleans > PlayerControl.AllPlayerControls.Count || ventCleans > reader.BytesRemaining) return;
+				if(ventCleans > PlayerControl.AllPlayerControls.Count || ventCleans > reader.BytesRemaining) goto end;
 
 				// Skip reading through vent clean data
 				// 1 byte for player id, another byte for vent id, so we need to skip by 2 * vent clean count
 				reader.Position += 2 * ventCleans;
 
 				int ventedPlayers = reader.ReadPackedInt32();
-				if(ventedPlayers > PlayerControl.AllPlayerControls.Count || ventedPlayers > reader.BytesRemaining) return;
+				if(ventedPlayers > PlayerControl.AllPlayerControls.Count || ventedPlayers > reader.BytesRemaining) goto end;
 
 				Dictionary<byte, byte> ventData = new Dictionary<byte, byte>();
 				for(int i = 0; i < ventedPlayers; i++)
@@ -183,8 +183,6 @@ namespace HydraMenu.modules
 
 					ventData[playerId] = ventId;
 				}
-
-				reader.Position = oldReadPosition;
 
 				// Compare with what we have with new data to see vent changes
 				foreach(PlayerControl player in PlayerControl.AllPlayerControls)
@@ -210,6 +208,9 @@ namespace HydraMenu.modules
 						PublishEvent(OnPlayerMoveVent, player, oldVent, newVent);
 					}
 				}
+
+				end:
+				reader.Position = oldReadPosition;
 			}
 		}
 
@@ -273,14 +274,13 @@ namespace HydraMenu.modules
 				int oldReadPosition = reader.Position;
 
 				int playerCount = reader.ReadPackedInt32();
-				if(playerCount > PlayerControl.AllPlayerControls.Count || playerCount > reader.BytesRemaining) return;
+				if(playerCount > PlayerControl.AllPlayerControls.Count || playerCount > reader.BytesRemaining) goto end;
 
 				HashSet<byte> players = new HashSet<byte>();
 
 				for(int i = 0; i < playerCount; i++)
 				{
 					byte playerId = reader.ReadByte();
-
 					players.Add(playerId);
 				}
 
@@ -299,6 +299,7 @@ namespace HydraMenu.modules
 					}
 				}
 
+				end:
 				reader.Position = oldReadPosition;
 			}
 		}

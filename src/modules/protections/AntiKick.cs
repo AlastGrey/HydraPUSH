@@ -31,14 +31,16 @@ namespace HydraMenu.modules.protections
 				SystemTypes system = (SystemTypes)reader.ReadByte();
 				PlayerControl player = reader.ReadNetObject<PlayerControl>();
 
+				bool shouldBlock = false;
 				if(system == SystemTypes.Ventilation && !AmongUsClient.Instance.AmHost)
 				{
 					Hydra.notifications.Send("Protections Alert", $"{player.Data.PlayerName} attempted to use the VentilationSystem kick exploit on you!");
-					return false;
+					shouldBlock = true;
 				}
 
 				reader.Position = oldReadPosition;
-				return true;
+
+				return !shouldBlock;
 			}
 		}
 

@@ -114,11 +114,11 @@ namespace HydraMenu.anticheat
 			int oldReadPosition = reader.Position;
 
 			bool isValid = rpcCheck.Validate(player, reader);
-			if(!isValid && discardRpc) return false;
 
-			// Put the read position back to its previous spot to not mess up the HandleRpc function
+			// Put the read position back to its previous spot to not mess up the HandleRpc function or other patches
 			reader.Position = oldReadPosition;
-			return true;
+
+			return isValid || !discardRpc;
 		}
 
 		public static bool HandleGameData(GameDataTypes type, MessageReader reader)
@@ -129,11 +129,11 @@ namespace HydraMenu.anticheat
 			int oldReadPosition = reader.Position;
 
 			bool isValid = gameDataCheck.Validate(reader);
-			if(!isValid && discardRpc) return false;
 
 			// Put the read position back to its previous spot
 			reader.Position = oldReadPosition;
-			return true;
+
+			return isValid || !discardRpc;
 		}
 
 		public static void Flag(PlayerControl player, string reason, bool shouldPunish = true)
