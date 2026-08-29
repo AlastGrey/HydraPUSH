@@ -367,7 +367,6 @@ namespace HydraMenu.modules
 
 				Il2CppSystem.Type type = obj.GetIl2CppType();
 
-				Hydra.Log.LogMessage($"Net object {type.FullName} was spawned");
 				if(type == Il2CppType.From(typeof(LobbyBehaviour)))
 				{
 					HostSection.lobbyList.Enqueue(obj);

@@ -87,8 +87,8 @@ namespace HydraMenu.ui.sections
 			Dictionary<int, string> vents = MapAssets.GetVents();
 
 			GUILayout.Space(5);
-			GUILayout.Label($"Vent TP:");
-			Hydra.routines.teleportSpammer.Enabled = GUILayout.Toggle(Hydra.routines.teleportSpammer.Enabled, "Teleport Flooder");
+			GUILayout.Label($"Vent Teleport:");
+			Hydra.routines.teleportSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Teleport Flooder", ref Hydra.routines.teleportSpammer.targets);
 
 			GUILayout.Label($"Teleport everyone to vent: {vents[selectedVent]}");
 			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);
