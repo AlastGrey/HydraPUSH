@@ -7,7 +7,7 @@ namespace HydraMenu.features
 {
 	static class ClickBlock
 	{
-		public static bool ShouldBlock()
+		public static bool BlockMenuClicks()
 		{
 			if(!MenuSection.BlockClickThrough) return true;
 			MainUI ui = MainUI.Instance;
@@ -22,14 +22,14 @@ namespace HydraMenu.features
 	}
 
 	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.ReceiveClickDown))]
-	static class BlockPassiveButtonClickDown { static bool Prefix() => ClickBlock.ShouldBlock(); }
+	static class BlockPassiveButtonClickDown { static bool Prefix() => ClickBlock.BlockMenuClicks(); }
 
 	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.ReceiveRepeatDown))]
-	static class BlockPassiveButtonRepeatDown { static bool Prefix() => ClickBlock.ShouldBlock(); }
+	static class BlockPassiveButtonRepeatDown { static bool Prefix() => ClickBlock.BlockMenuClicks(); }
 
 	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.ReceiveClickUp))]
-	static class BlockPassiveButtonClickUp { static bool Prefix() => ClickBlock.ShouldBlock(); }
+	static class BlockPassiveButtonClickUp { static bool Prefix() => ClickBlock.BlockMenuClicks(); }
 
 	[HarmonyPatch(typeof(PassiveButton), nameof(PassiveButton.SetPassiveButtonHoverStateActive))]
-	static class BlockHoverActive { static bool Prefix() => ClickBlock.ShouldBlock(); }
+	static class BlockHoverActive { static bool Prefix() => ClickBlock.BlockMenuClicks(); }
 }
