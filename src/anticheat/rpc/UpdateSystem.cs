@@ -22,6 +22,7 @@ namespace HydraMenu.anticheat.rpc
 		private static readonly Dictionary<Il2CppSystem.Type, Func<PlayerControl, MessageReader, bool>> systemHandlers = new Dictionary<Il2CppSystem.Type, Func<PlayerControl, MessageReader, bool>>()
 		{
 			{ Il2CppType.From(typeof(HudOverrideSystemType)), ValidateHudOverrideSystem },
+			{ Il2CppType.From(typeof(LifeSuppSystemType)), ValidateLifeSuppSystem },
 			{ Il2CppType.From(typeof(MushroomMixupSabotageSystem)), ValidateMushroomMixupSystem },
 			{ Il2CppType.From(typeof(ReactorSystemType)), ValidateReactorSystem},
 			{ Il2CppType.From(typeof(SabotageSystemType)), ValidateSabotageSystem },
@@ -62,6 +63,25 @@ namespace HydraMenu.anticheat.rpc
 			if(operation.HasFlag(HudOverrideSystemOperation.Sabotage))
 			{
 				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force call the Reactor sabotage");
+				return false;
+			}
+
+			return true;
+		}
+
+		private static bool ValidateLifeSuppSystem(PlayerControl player, MessageReader reader)
+		{
+			LifeSuppSystemOperation operation = (LifeSuppSystemOperation)reader.ReadByte();
+
+			if(operation.HasFlag(LifeSuppSystemOperation.Fix))
+			{
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force repair the LifeSupp sabotage");
+				return false;
+			}
+
+			if(operation.HasFlag(LifeSuppSystemOperation.Sabotage))
+			{
+				Anticheat.Flag(player, $"{player.Data.PlayerName} attempted to force call the LifeSupp sabotage");
 				return false;
 			}
 

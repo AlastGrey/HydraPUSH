@@ -38,6 +38,14 @@ namespace HydraMenu.network
 		}
 
 		[Flags]
+		public enum LifeSuppSystemOperation
+		{
+			Fix = 16,
+			RepairConsole = 64,
+			Sabotage = 128
+		}
+
+		[Flags]
 		public enum ReactorSystemOperation
 		{
 			Fix = 16,
