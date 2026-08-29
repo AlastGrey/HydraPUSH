@@ -30,6 +30,7 @@ namespace HydraMenu.modules
 		public static AntiOverload antiOverload = new AntiOverload();
 		public static BlockServerTeleports blockServerTeleports = new BlockServerTeleports();
 		public static BlockUnauthorizedUpdates blockUnauthorizedUpdates = new BlockUnauthorizedUpdates();
+		public static BypassDisconnectPenalty bypassDisconnectPenalty = new BypassDisconnectPenalty();
 		public static BypassShapeshiftRatelimits bypassShapeshiftRatelimits = new BypassShapeshiftRatelimits();
 		public static ForceDTLs forceDtls = new ForceDTLs();
 
@@ -92,6 +93,7 @@ namespace HydraMenu.modules
 				antiOverload,
 				blockServerTeleports,
 				blockUnauthorizedUpdates,
+				bypassDisconnectPenalty,
 				bypassShapeshiftRatelimits,
 				forceDtls,
 
