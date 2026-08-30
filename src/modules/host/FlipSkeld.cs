@@ -6,11 +6,6 @@ namespace HydraMenu.modules.host
 	{
 		public FlipSkeld() : base("FlipSkeld") { }
 
-		private static FlipSkeld Instance
-		{
-			get { return ModuleManager.flipSkeld; }
-		}
-
 		private void SwapMapAssets()
 		{
 			if(AmongUsClient.Instance == null)

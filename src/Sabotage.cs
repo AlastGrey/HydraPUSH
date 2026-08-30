@@ -174,6 +174,10 @@ namespace HydraMenu
 				case SystemTypes.MushroomMixupSabotage:
 					batch.QueueUpdateSystem(PlayerControl.LocalPlayer, system, (byte)MushroomMixupSabotageSystem.Operation.TriggerSabotage);
 					break;
+
+				default:
+					Hydra.Log.LogError($"Attempted to sabotage unknown system {system}");
+					break;
 			}
 
 			batch.FinishBatch();
@@ -238,6 +242,10 @@ namespace HydraMenu
 
 					mixupSystem.currentSecondsUntilHeal = 0.1f;
 					mixupSystem.IsDirty = true;
+					break;
+
+				default:
+					Hydra.Log.LogError($"Attempted to fix unknown sabotage system {system}");
 					break;
 			}
 

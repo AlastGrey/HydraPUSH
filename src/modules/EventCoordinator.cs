@@ -78,6 +78,9 @@ namespace HydraMenu.modules
 			{
 				Hydra.Log.LogInfo("[Disconnect Logger] Our player was disconnected from the lobby");
 
+				HostSection.lobbyList.Clear();
+				HostSection.shipList.Clear();
+
 				PublishEvent(OnDisconnect);
 			}
 		}

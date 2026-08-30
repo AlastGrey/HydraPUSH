@@ -37,6 +37,7 @@ namespace HydraMenu.modules
 		// Roles
 		public static MoveInVents moveInVents = new MoveInVents();
 		public static NoKillChecks noKillChecks = new NoKillChecks();
+		public static NoSabotageCooldown noSabotageCooldown = new NoSabotageCooldown();
 		public static NoShapeshiftAnimation noShapeshiftAnimation = new NoShapeshiftAnimation();
 		public static UnlockSabotageButton unlockSabotageButton = new UnlockSabotageButton();
 		public static VentAsCrewmate ventAsCrewmate = new VentAsCrewmate();
@@ -99,6 +100,7 @@ namespace HydraMenu.modules
 
 				moveInVents,
 				noKillChecks,
+				noSabotageCooldown,
 				noShapeshiftAnimation,
 				unlockSabotageButton,
 				ventAsCrewmate,

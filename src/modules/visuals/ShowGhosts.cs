@@ -6,7 +6,7 @@ namespace HydraMenu.modules.visuals
 	{
 		public ShowGhosts() : base("ShowGhosts")
 		{
-			Enabled = true;
+			base.Enabled = true;
 		}
 
 		private static ShowGhosts Instance

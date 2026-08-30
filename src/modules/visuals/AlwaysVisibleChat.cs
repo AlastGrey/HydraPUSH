@@ -6,7 +6,7 @@ namespace HydraMenu.modules.visuals
 	{
 		public AlwaysVisibleChat() : base("AlwaysVisibleChat")
 		{
-			Enabled = true;
+			base.Enabled = true;
 		}
 
 		private static AlwaysVisibleChat Instance
