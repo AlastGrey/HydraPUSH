@@ -24,6 +24,9 @@ namespace HydraMenu.routines
 
 			List<int> colors = Enumerable.Range(0, 18).ToList();
 
+			// On +25 modded protocol lobbies, we are able to send SetColor RPCs as non-host
+			// however we are still affected by message packing limits
+			int packingLimit = AmongUsClient.Instance.GetMaxMessagePackingLimit();
 			BatchedMessage batch = new BatchedMessage();
 
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
@@ -41,6 +44,12 @@ namespace HydraMenu.routines
 				{
 					// To ensure compatability for lobbies with more than 18 players
 					color = rnd.Next(0, 18);
+				}
+
+				if(batch.msgCount >= packingLimit)
+				{
+					batch.FinishBatch();
+					batch = new BatchedMessage();
 				}
 
 				batch.QueueSetColor(player, (byte)color);

@@ -212,10 +212,19 @@ namespace HydraMenu.ui.sections
 				return;
 			}
 
+			// On +25 modded protocol lobbies, we are able to send SetColor RPCs as non-host
+			// however we are still affected by message packing limits
+			int packingLimit = AmongUsClient.Instance.GetMaxMessagePackingLimit();
 			BatchedMessage batch = new BatchedMessage();
 
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
 			{
+				if(batch.msgCount >= packingLimit)
+				{
+					batch.FinishBatch();
+					batch = new BatchedMessage();
+				}
+
 				batch.QueueMurderPlayer(PlayerControl.LocalPlayer, player, MurderResultFlags.Succeeded);
 			}
 
