@@ -137,7 +137,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Meeting Controls:");
 			ModuleManager.disableMeetings.Enabled = GUILayout.Toggle(ModuleManager.disableMeetings.Enabled, "Disable Meetings");
 			Hydra.routines.reportBodySpam.Enabled = GUILayout.Toggle(Hydra.routines.reportBodySpam.Enabled, "Spam Report Bodies");
-			Hydra.routines.voteSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Spam Votes", ref Hydra.routines.voteSpammer.targets);
+			Hydra.routines.voteSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Spam Votes", Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Close Meeting"))
 			{
@@ -192,7 +192,7 @@ namespace HydraMenu.ui.sections
 				batch.FinishBatch();
 			}
 
-			Hydra.routines.discoHost.Enabled = Controls.GlobalPlayerSpecificToggle("Disco Party", ref Hydra.routines.discoHost.targets);
+			Hydra.routines.discoHost.Enabled = Controls.GlobalPlayerSpecificToggle("Disco Party", Hydra.routines.discoHost.targets);
 
 			GUILayout.Label($"Color randomization delay: {Hydra.routines.discoHost.RandomizationDelay:F2}s");
 			Hydra.routines.discoHost.RandomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.RandomizationDelay, 0.1f, 2.0f);

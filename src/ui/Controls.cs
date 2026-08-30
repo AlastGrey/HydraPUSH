@@ -91,7 +91,7 @@ namespace HydraMenu.ui
 			return currentPlayer != null;
 		}
 
-		public static bool PlayerSpecificToggle(string label, PlayerControl selectedPlayer, ref HashSet<int> currentPlayers)
+		public static bool PlayerSpecificToggle(string label, PlayerControl selectedPlayer, HashSet<int> currentPlayers)
 		{
 			int hashCode = selectedPlayer.GetHashCode();
 
@@ -123,7 +123,7 @@ namespace HydraMenu.ui
 			return currentPlayers.Count != 0;
 		}
 
-		public static bool GlobalPlayerSpecificToggle(string label, ref HashSet<int> currentPlayers)
+		public static bool GlobalPlayerSpecificToggle(string label, HashSet<int> currentPlayers)
 		{
 			GUIStyle toggle = new GUIStyle(GUI.skin.toggle);
 			bool enabled = currentPlayers.Count != 0;

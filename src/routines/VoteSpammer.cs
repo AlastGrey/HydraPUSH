@@ -8,7 +8,7 @@ namespace HydraMenu.routines
 	{
 		public VoteSpammer() : base("VoteSpammer") { }
 
-		public HashSet<int> targets = new HashSet<int>();
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		public readonly float VOTE_DELAY = 1.0f;
 		private float timeElapsed = 0.0f;

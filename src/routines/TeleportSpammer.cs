@@ -8,7 +8,7 @@ namespace HydraMenu.routines
 	{
 		public TeleportSpammer() : base("TeleportSpammer") { }
 
-		public HashSet<int> targets = new HashSet<int>();
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		private readonly System.Random rnd = new System.Random();
 		private readonly float TELEPORT_DELAY = 0.5f;

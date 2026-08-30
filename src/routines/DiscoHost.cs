@@ -9,7 +9,7 @@ namespace HydraMenu.routines
 	public class DiscoHostRoutine : Routine
 	{
 		public DiscoHostRoutine() : base("DiscoHost") { }
-		public HashSet<int> targets = new HashSet<int>();
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		public float RandomizationDelay { get; set; } = 0.5f;
 		private float timeElapsed = 0f;

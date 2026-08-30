@@ -22,7 +22,7 @@ namespace HydraMenu.routines
 
 		public RoutineManager()
 		{
-			routineList = [ autoTriggerSpores, discoHost, doorTroller, jailPlayer, petPlayer, playerFollower, reportBodySpam, teleportSpammer, ziplineSpammer ];
+			routineList = [ autoTriggerSpores, discoHost, doorTroller, jailPlayer, petPlayer, playerFollower, reportBodySpam, teleportSpammer, voteSpammer, ziplineSpammer ];
 		}
 
 		public void Update()

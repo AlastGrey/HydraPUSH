@@ -30,7 +30,7 @@ namespace HydraMenu.ui.sections
 			ModuleManager.disableCameras.Enabled = GUILayout.Toggle(ModuleManager.disableCameras.Enabled, "Disable Security Cameras");
 			ModuleManager.disableSabotages.Enabled = GUILayout.Toggle(ModuleManager.disableSabotages.Enabled, "Disable Sabotages");
 			ModuleManager.disableVents.Enabled = GUILayout.Toggle(ModuleManager.disableVents.Enabled, "Disable Vents");
-			Hydra.routines.ziplineSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Zipline Spammer", ref Hydra.routines.ziplineSpammer.targets);
+			Hydra.routines.ziplineSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Zipline Spammer", Hydra.routines.ziplineSpammer.targets);
 
 			if(GUILayout.Button("Kick All Players"))
 			{
@@ -89,7 +89,7 @@ namespace HydraMenu.ui.sections
 
 			GUILayout.Space(5);
 			GUILayout.Label($"Vent Teleport:");
-			Hydra.routines.teleportSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Teleport Flooder", ref Hydra.routines.teleportSpammer.targets);
+			Hydra.routines.teleportSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Teleport Flooder", Hydra.routines.teleportSpammer.targets);
 
 			GUILayout.Label($"Teleport everyone to vent: {vents[selectedVent]}");
 			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);

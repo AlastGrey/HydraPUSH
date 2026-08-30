@@ -10,7 +10,7 @@ namespace HydraMenu.routines
 	{
 		public JailPlayerRoutine() : base("JailPlayer") { }
 
-		public HashSet<int> targets = new HashSet<int>();
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		// For the sake of performance, only check if players are outside the jail every 500ms
 		public readonly float DELAY = 0.5f;

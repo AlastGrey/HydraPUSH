@@ -9,7 +9,7 @@ namespace HydraMenu.routines
 	{
 		public ZiplineSpammer() : base("ZiplineSpammer") { }
 
-		public HashSet<int> targets = new HashSet<int>();
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		private readonly System.Random rnd = new System.Random();
 		public readonly float ZIPLINE_DELAY = 5.0f;
