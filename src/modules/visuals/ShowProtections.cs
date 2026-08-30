@@ -6,7 +6,7 @@ namespace HydraMenu.modules.visuals
 	{
 		public ShowProtections() : base("ShowProtections")
 		{
-			Enabled = true;
+			base.Enabled = true;
 		}
 
 		private static ShowProtections Instance

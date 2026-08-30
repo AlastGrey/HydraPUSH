@@ -1,4 +1,6 @@
-﻿namespace HydraMenu.modules.visuals
+﻿using UnityEngine;
+
+namespace HydraMenu.modules.visuals
 {
 	internal class ShowGhostMessages : Module
 	{
@@ -9,15 +11,47 @@
 
 		private void OnPlayerChat(PlayerControl player, string text)
 		{
-			if(player == null) return;
+			if(PlayerControl.LocalPlayer == null || PlayerControl.LocalPlayer.Data == null || PlayerControl.LocalPlayer.Data.IsDead || !player.Data.IsDead) return;
 
-			// This is kind of a hacky workaround to be able to see messages by ghosts
-			// The game has no easy way to show messages by ghosts, so we would have to completely reimplement the ChatController::AddChat function
-			// I don't really like reimplementing large functions as it makes backwards compatability harder and requires more effort when updating the mod to newer versions of AU
-			// Instead of having to reimplement the function, we can just use ChatController::AddChatWarning to add a chat bubble and include the player's name and message contents to the warning
-			if(!PlayerControl.LocalPlayer.Data.IsDead && player.Data.IsDead)
+			// There's no quick and easy way to get messages by ghosts to show up in chat if we are still alive
+			// We have to reimplement the ChatController::AddChat method and build the chat bubble ourself
+			ChatController chatController = HudManager.Instance.Chat;
+			ChatBubble bubble = chatController.GetPooledBubble();
+			try
 			{
-				HudManager._instance.Chat.AddChatWarning($"{player.Data.PlayerName}\n{text}");
+				bubble.transform.SetParent(chatController.scroller.Inner);
+				bubble.transform.localScale = Vector3.one;
+
+				if(player == PlayerControl.LocalPlayer)
+				{
+					bubble.SetRight();
+				}
+				else
+				{
+					bubble.SetLeft();
+				}
+
+				bubble.SetCosmetics(player.Data);
+				chatController.SetChatBubbleName(bubble, player.Data, player.Data.IsDead, false, PlayerNameColor.Get(player.Data), null);
+				bubble.SetText(text);
+				bubble.AlignChildren();
+				chatController.AlignAllBubbles();
+				chatController.chatNotification.SetUp(player, text);
+
+				if(!chatController.IsOpenOrOpening && chatController.notificationRoutine == null)
+				{
+					chatController.notificationRoutine = chatController.StartCoroutine(chatController.BounceDot());
+				}
+
+				if(player != PlayerControl.LocalPlayer && !chatController.IsOpenOrOpening)
+				{
+					SoundManager.Instance.PlaySound(chatController.messageSound, false, 1f, null).pitch = 0.5f + player.PlayerId / 15f;
+					chatController.chatNotification.SetUp(player, text);
+				}
+			}
+			catch
+			{
+				HudManager.Instance.Chat.chatBubblePool.Reclaim(bubble);
 			}
 		}
 

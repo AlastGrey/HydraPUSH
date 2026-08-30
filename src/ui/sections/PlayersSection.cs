@@ -158,7 +158,9 @@ namespace HydraMenu.ui.sections
 			ModuleManager.spectatePlayer.Enabled = Controls.PlayerSpecificToggle("Spectate", target, ref ModuleManager.spectatePlayer.target);
 			Hydra.routines.petPlayer.Enabled = Controls.PlayerSpecificToggle("Pet Player", target, ref Hydra.routines.petPlayer.target);
 			Hydra.routines.playerFollower.Enabled = Controls.PlayerSpecificToggle("Follow", target, ref Hydra.routines.playerFollower.target);
-			Hydra.routines.jailPlayer.Enabled = Controls.PlayerSpecificToggle("Place in Jail", target, ref Hydra.routines.jailPlayer.targets);
+			Hydra.routines.jailPlayer.Enabled = Controls.PlayerSpecificToggle("Place in Jail", target, Hydra.routines.jailPlayer.targets);
+			Hydra.routines.teleportSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Teleports", target, Hydra.routines.teleportSpammer.targets);
+			Hydra.routines.ziplineSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Zipline", target, Hydra.routines.ziplineSpammer.targets);
 
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Teleport"))
@@ -211,7 +213,8 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Host Only Features:" + (AmongUsClient.Instance.AmHost ? "" : "\n(Using these will get you kicked!)"));
 
 			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies As", target, ref ModuleManager.autoReportBodies.target);
-			Hydra.routines.discoHost.Enabled = Controls.PlayerSpecificToggle("Disco Mode", target, ref Hydra.routines.discoHost.targets);
+			Hydra.routines.discoHost.Enabled = Controls.PlayerSpecificToggle("Disco Mode", target, Hydra.routines.discoHost.targets);
+			Hydra.routines.voteSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Votes As", target, Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Force Meeting As"))
 			{

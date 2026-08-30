@@ -21,6 +21,7 @@ namespace HydraMenu.modules
 		public static DisableCloseDoors disableCloseDoors = new DisableCloseDoors();
 		public static DisableGameEnd disableGameEnd = new DisableGameEnd();
 		public static DisableMeetings disableMeetings = new DisableMeetings();
+		public static DisableVentClean disableVentClean = new DisableVentClean();
 		public static FlipSkeld flipSkeld = new FlipSkeld();
 		public static NoKillCooldown noKillCooldown = new NoKillCooldown();
 
@@ -30,12 +31,14 @@ namespace HydraMenu.modules
 		public static AntiOverload antiOverload = new AntiOverload();
 		public static BlockServerTeleports blockServerTeleports = new BlockServerTeleports();
 		public static BlockUnauthorizedUpdates blockUnauthorizedUpdates = new BlockUnauthorizedUpdates();
+		public static BypassDisconnectPenalty bypassDisconnectPenalty = new BypassDisconnectPenalty();
 		public static BypassShapeshiftRatelimits bypassShapeshiftRatelimits = new BypassShapeshiftRatelimits();
 		public static ForceDTLs forceDtls = new ForceDTLs();
 
 		// Roles
 		public static MoveInVents moveInVents = new MoveInVents();
 		public static NoKillChecks noKillChecks = new NoKillChecks();
+		public static NoSabotageCooldown noSabotageCooldown = new NoSabotageCooldown();
 		public static NoShapeshiftAnimation noShapeshiftAnimation = new NoShapeshiftAnimation();
 		public static UnlockSabotageButton unlockSabotageButton = new UnlockSabotageButton();
 		public static VentAsCrewmate ventAsCrewmate = new VentAsCrewmate();
@@ -84,6 +87,7 @@ namespace HydraMenu.modules
 				disableCloseDoors,
 				disableGameEnd,
 				disableMeetings,
+				disableVentClean,
 				flipSkeld,
 				noKillCooldown,
 
@@ -92,11 +96,13 @@ namespace HydraMenu.modules
 				antiOverload,
 				blockServerTeleports,
 				blockUnauthorizedUpdates,
+				bypassDisconnectPenalty,
 				bypassShapeshiftRatelimits,
 				forceDtls,
 
 				moveInVents,
 				noKillChecks,
+				noSabotageCooldown,
 				noShapeshiftAnimation,
 				unlockSabotageButton,
 				ventAsCrewmate,

@@ -12,6 +12,7 @@ namespace HydraMenu.ui.sections
 			// Network
 			ModuleManager.forceDtls.Enabled = GUILayout.Toggle(ModuleManager.forceDtls.Enabled, "Force enable DTLS to encrypt network data");
 
+			ModuleManager.bypassDisconnectPenalty.Enabled = GUILayout.Toggle(ModuleManager.bypassDisconnectPenalty.Enabled, "Bypass disconnection penalties");
 			ModuleManager.blockServerTeleports.Enabled = GUILayout.Toggle(ModuleManager.blockServerTeleports.Enabled, "Block position updates from server");
 			ModuleManager.blockUnauthorizedUpdates.Enabled = GUILayout.Toggle(ModuleManager.blockUnauthorizedUpdates.Enabled, "Block unauthorized system updates");
 			ModuleManager.bypassShapeshiftRatelimits.Enabled = GUILayout.Toggle(ModuleManager.bypassShapeshiftRatelimits.Enabled, "Bypass ratelimits for Shapeshift RPC");

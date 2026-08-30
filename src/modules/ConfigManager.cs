@@ -31,21 +31,24 @@ namespace HydraMenu.modules
 				Directory.CreateDirectory(CONFIG_PATH);
 
 				configList.Add(currentConfig);
+				SaveConfig(currentConfig);
 				return;
 			}
 
 			string[] configFiles = Directory.GetFiles(CONFIG_PATH, "*.json");
 			Hydra.Log.LogInfo($"Discovered {configFiles.Length} config files");
 
-			for(int i = 0; i < configFiles.Length; i++)
+			foreach(string file in configFiles)
 			{
-				configList.Add(Path.GetFileNameWithoutExtension(configFiles[i]));
+				configList.Add(Path.GetFileNameWithoutExtension(file));
 			}
 
 			// There should always be a config named "Hydra" present
 			if(!configList.Contains(currentConfig))
 			{
 				configList.Add(currentConfig);
+				SaveConfig(currentConfig);
+				return;
 			}
 
 			// Load the default config

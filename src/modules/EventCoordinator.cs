@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Hazel;
+using HydraMenu.ui.sections;
+using Il2CppInterop.Runtime;
 using InnerNet;
 using System;
 using System.Collections.Generic;
@@ -36,6 +38,11 @@ namespace HydraMenu.modules
 
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
 
+		// Network Events
+		public static event Action<InnerNetObject> OnNetObjectSpawn;
+
+		private static readonly HashSet<Il2CppSystem.Type> ShipNetObjects = [Il2CppType.From(typeof(ShipStatus)), Il2CppType.From(typeof(SkeldShipStatus)), Il2CppType.From(typeof(MiraShipStatus)), Il2CppType.From(typeof(PolusShipStatus)), Il2CppType.From(typeof(AirshipStatus)), Il2CppType.From(typeof(FungleShipStatus))];
+
 		[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGame))]
 		class GameStart
 		{
@@ -70,6 +77,9 @@ namespace HydraMenu.modules
 			static void Prefix()
 			{
 				Hydra.Log.LogInfo("[Disconnect Logger] Our player was disconnected from the lobby");
+
+				HostSection.lobbyList.Clear();
+				HostSection.shipList.Clear();
 
 				PublishEvent(OnDisconnect);
 			}
@@ -106,6 +116,8 @@ namespace HydraMenu.modules
 			static void Postfix(ZiplineBehaviour __instance)
 			{
 				ZiplineConsole console = __instance.lastUsedConsole;
+				if(console == null) return;
+
 				Hydra.Log.LogMessage("Zipline " + (__instance.lastUsedConsole.atTop ? "at top" : "at bottom") + " was used");
 
 				PublishEvent(OnUseZipline, console);
@@ -166,14 +178,14 @@ namespace HydraMenu.modules
 				int oldReadPosition = reader.Position;
 
 				int ventCleans = reader.ReadPackedInt32();
-				if(ventCleans > PlayerControl.AllPlayerControls.Count || ventCleans > reader.BytesRemaining) return;
+				if(ventCleans > PlayerControl.AllPlayerControls.Count || ventCleans > reader.BytesRemaining) goto end;
 
 				// Skip reading through vent clean data
 				// 1 byte for player id, another byte for vent id, so we need to skip by 2 * vent clean count
 				reader.Position += 2 * ventCleans;
 
 				int ventedPlayers = reader.ReadPackedInt32();
-				if(ventedPlayers > PlayerControl.AllPlayerControls.Count || ventedPlayers > reader.BytesRemaining) return;
+				if(ventedPlayers > PlayerControl.AllPlayerControls.Count || ventedPlayers > reader.BytesRemaining) goto end;
 
 				Dictionary<byte, byte> ventData = new Dictionary<byte, byte>();
 				for(int i = 0; i < ventedPlayers; i++)
@@ -183,8 +195,6 @@ namespace HydraMenu.modules
 
 					ventData[playerId] = ventId;
 				}
-
-				reader.Position = oldReadPosition;
 
 				// Compare with what we have with new data to see vent changes
 				foreach(PlayerControl player in PlayerControl.AllPlayerControls)
@@ -210,6 +220,9 @@ namespace HydraMenu.modules
 						PublishEvent(OnPlayerMoveVent, player, oldVent, newVent);
 					}
 				}
+
+				end:
+				reader.Position = oldReadPosition;
 			}
 		}
 
@@ -273,14 +286,13 @@ namespace HydraMenu.modules
 				int oldReadPosition = reader.Position;
 
 				int playerCount = reader.ReadPackedInt32();
-				if(playerCount > PlayerControl.AllPlayerControls.Count || playerCount > reader.BytesRemaining) return;
+				if(playerCount > PlayerControl.AllPlayerControls.Count || playerCount > reader.BytesRemaining) goto end;
 
 				HashSet<byte> players = new HashSet<byte>();
 
 				for(int i = 0; i < playerCount; i++)
 				{
 					byte playerId = reader.ReadByte();
-
 					players.Add(playerId);
 				}
 
@@ -299,6 +311,7 @@ namespace HydraMenu.modules
 					}
 				}
 
+				end:
 				reader.Position = oldReadPosition;
 			}
 		}
@@ -347,6 +360,28 @@ namespace HydraMenu.modules
 				}
 
 				PublishEvent(OnPlayerVotekick, source, target);
+			}
+		}
+
+		[HarmonyPatch(typeof(InnerNetObjectCollection), nameof(InnerNetObjectCollection.TryAddNetObject))]
+		class NetObjectAdd
+		{
+			static void Postfix(InnerNetObject obj)
+			{
+				if(obj == null) return;
+
+				Il2CppSystem.Type type = obj.GetIl2CppType();
+
+				if(type == Il2CppType.From(typeof(LobbyBehaviour)))
+				{
+					HostSection.lobbyList.Enqueue(obj);
+				}
+				else if(ShipNetObjects.Contains(type))
+				{
+					HostSection.shipList.Enqueue(obj);
+				}
+
+				PublishEvent(OnNetObjectSpawn, obj);
 			}
 		}
 

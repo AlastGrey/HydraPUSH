@@ -6,7 +6,7 @@ namespace HydraMenu.modules.visuals
 	{
 		public SkipShhhAnimation() : base("SkipShhhAnimation")
 		{
-			Enabled = true;
+			base.Enabled = true;
 		}
 
 		private static SkipShhhAnimation Instance

@@ -41,45 +41,42 @@ namespace HydraMenu.modules.troll
 
 		private void EnableCommsFor(PlayerControl player)
 		{
-			BatchedMessage batch = new BatchedMessage(player.OwnerId);
-
 			if(!AmongUsClient.Instance.AmHost)
 			{
-				batch.QueueUpdateSystem(PlayerControl.LocalPlayer, SystemTypes.Comms, 128);
+				Sabotage.SabotageSystem(SystemTypes.Comms, player.OwnerId);
+				return;
 			}
-			else
-			{
-				MessageWriter systemUpdate = MessageWriter.Get(SendOption.Reliable);
-				systemUpdate.StartMessage((byte)SystemTypes.Comms);
-				// 1 = Comms sabotage is active, 0 = Comms sabotage is inactive
-				systemUpdate.Write(1);
-				systemUpdate.EndMessage();
 
-				batch.QueueDataFlag(ShipStatus.Instance.NetId, systemUpdate);
-			}
+			BatchedMessage batch = new BatchedMessage(player.OwnerId);
+
+			MessageWriter systemUpdate = MessageWriter.Get(SendOption.Reliable);
+			systemUpdate.StartMessage((byte)SystemTypes.Comms);
+			// 1 = Comms sabotage is active, 0 = Comms sabotage is inactive
+			systemUpdate.Write(1);
+			systemUpdate.EndMessage();
+
+			batch.QueueDataFlag(ShipStatus.Instance.NetId, systemUpdate);
 
 			batch.FinishBatch();
 		}
 
 		private void DisableCommsFor(PlayerControl player)
 		{
-			BatchedMessage batch = new BatchedMessage(player.OwnerId);
-
 			if(!AmongUsClient.Instance.AmHost)
 			{
-				batch.QueueUpdateSystem(PlayerControl.LocalPlayer, SystemTypes.Comms, 16 | 0);
-				batch.QueueUpdateSystem(PlayerControl.LocalPlayer, SystemTypes.Comms, 16 | 1);
+				Sabotage.FixSabotage(SystemTypes.Comms, player.OwnerId);
+				return;
 			}
-			else
-			{
-				MessageWriter systemUpdate = MessageWriter.Get(SendOption.Reliable);
-				systemUpdate.StartMessage((byte)SystemTypes.Comms);
-				// 1 = Comms sabotage is active, 0 = Comms sabotage is inactive
-				systemUpdate.Write(0);
-				systemUpdate.EndMessage();
 
-				batch.QueueDataFlag(ShipStatus.Instance.NetId, systemUpdate);
-			}
+			BatchedMessage batch = new BatchedMessage(player.OwnerId);
+
+			MessageWriter systemUpdate = MessageWriter.Get(SendOption.Reliable);
+			systemUpdate.StartMessage((byte)SystemTypes.Comms);
+			// 1 = Comms sabotage is active, 0 = Comms sabotage is inactive
+			systemUpdate.Write(0);
+			systemUpdate.EndMessage();
+
+			batch.QueueDataFlag(ShipStatus.Instance.NetId, systemUpdate);
 
 			batch.FinishBatch();
 		}

@@ -4,6 +4,7 @@ using HydraMenu.network;
 using InnerNet;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -16,6 +17,9 @@ namespace HydraMenu.ui.sections
 
 		private byte selectedMap = 0;
 		private Controls.PlayerColors selectedColor = 0;
+
+		public static Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
+		public static Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
 
 		public override void Render()
 		{
@@ -34,6 +38,8 @@ namespace HydraMenu.ui.sections
 
 			ModuleManager.disableCloseDoors.Enabled = GUILayout.Toggle(ModuleManager.disableCloseDoors.Enabled, "Disable Close Doors");
 			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
+			ModuleManager.disableVentClean.Enabled = GUILayout.Toggle(ModuleManager.disableVentClean.Enabled, "Disable Vent Clean");
+
 			ModuleManager.noKillCooldown.Enabled = GUILayout.Toggle(ModuleManager.noKillCooldown.Enabled, "No Kill Cooldown");
 
 			GUILayout.BeginHorizontal();
@@ -80,14 +86,16 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Map"))
 			{
-				if(ShipStatus.Instance != null)
+				if(shipList.Count != 0)
 				{
-					ShipStatus.Instance.Despawn();
+					InnerNetObject ship = shipList.Dequeue();
+					ship.Despawn();
+
 					Hydra.notifications.Send("Game Map", "The current map has been despawned.", 5);
 				}
 				else
 				{
-					Hydra.notifications.Send("Game Map", "The game map has already been despawned.", 5);
+					Hydra.notifications.Send("Game Map", "The game map has already been despawned.", 10);
 				}
 			}
 
@@ -100,14 +108,16 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Lobby"))
 			{
-				if(LobbyBehaviour.Instance != null)
+				if(lobbyList.Count > 0)
 				{
-					LobbyBehaviour.Instance.Despawn();
+					InnerNetObject lobby = lobbyList.Dequeue();
+					lobby.Despawn();
+
 					Hydra.notifications.Send("Lobby Map", "The lobby map has been despawned.", 5);
 				}
 				else
 				{
-					Hydra.notifications.Send("Lobby Map", "The lobby map has already been despawned.", 5);
+					Hydra.notifications.Send("Lobby Map", "The lobby map has already been despawned.", 10);
 				}
 			}
 
@@ -127,6 +137,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Meeting Controls:");
 			ModuleManager.disableMeetings.Enabled = GUILayout.Toggle(ModuleManager.disableMeetings.Enabled, "Disable Meetings");
 			Hydra.routines.reportBodySpam.Enabled = GUILayout.Toggle(Hydra.routines.reportBodySpam.Enabled, "Spam Report Bodies");
+			Hydra.routines.voteSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Spam Votes", Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Close Meeting"))
 			{
@@ -181,7 +192,7 @@ namespace HydraMenu.ui.sections
 				batch.FinishBatch();
 			}
 
-			Hydra.routines.discoHost.Enabled = Controls.GlobalPlayerSpecificToggle("Disco Party", ref Hydra.routines.discoHost.targets);
+			Hydra.routines.discoHost.Enabled = Controls.GlobalPlayerSpecificToggle("Disco Party", Hydra.routines.discoHost.targets);
 
 			GUILayout.Label($"Color randomization delay: {Hydra.routines.discoHost.RandomizationDelay:F2}s");
 			Hydra.routines.discoHost.RandomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.RandomizationDelay, 0.1f, 2.0f);
@@ -203,10 +214,19 @@ namespace HydraMenu.ui.sections
 				return;
 			}
 
+			// On +25 modded protocol lobbies, we are able to send SetColor RPCs as non-host
+			// however we are still affected by message packing limits
+			int packingLimit = AmongUsClient.Instance.GetMaxMessagePackingLimit();
 			BatchedMessage batch = new BatchedMessage();
 
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
 			{
+				if(batch.msgCount >= packingLimit)
+				{
+					batch.FinishBatch();
+					batch = new BatchedMessage();
+				}
+
 				batch.QueueMurderPlayer(PlayerControl.LocalPlayer, player, MurderResultFlags.Succeeded);
 			}
 

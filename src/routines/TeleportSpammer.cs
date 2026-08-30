@@ -1,4 +1,5 @@
 ﻿using HydraMenu.modules;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HydraMenu.routines
@@ -6,6 +7,8 @@ namespace HydraMenu.routines
 	public class TeleportSpammer : Routine
 	{
 		public TeleportSpammer() : base("TeleportSpammer") { }
+
+		public readonly HashSet<int> targets = new HashSet<int>();
 
 		private readonly System.Random rnd = new System.Random();
 		private readonly float TELEPORT_DELAY = 0.5f;
@@ -21,12 +24,17 @@ namespace HydraMenu.routines
 
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
 			{
-				if(player == PlayerControl.LocalPlayer) continue;
+				if(player == PlayerControl.LocalPlayer || (!IsGlobal && !targets.Contains(player.GetHashCode()))) continue;
 
 				int ventId = rnd.Next(0, ShipStatus.Instance.AllVents.Count);
 
 				Teleporter.TeleportToVent(player, ventId);
 			}
+		}
+
+		private bool IsGlobal
+		{
+			get { return targets.Count == 1 && targets.Contains(int.MaxValue); }
 		}
 
 		private void OnDisconnect()
@@ -49,6 +57,8 @@ namespace HydraMenu.routines
 
 		protected override void OnDisable()
 		{
+			targets.Clear();
+
 			EventCoordinator.OnDisconnect -= OnDisconnect;
 		}
 	}

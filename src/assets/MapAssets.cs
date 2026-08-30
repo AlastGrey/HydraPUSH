@@ -4,19 +4,19 @@ namespace HydraMenu.assets
 {
 	internal class MapAssets
 	{
-		public static Dictionary<string, TaskTypes> skeldAnimations = new Dictionary<string, TaskTypes>()
+		public static readonly Dictionary<string, TaskTypes> skeldAnimations = new Dictionary<string, TaskTypes>()
 		{
 			{ "Clear Asteroids", TaskTypes.ClearAsteroids },
 			{ "Empty Garbage", TaskTypes.EmptyGarbage },
 			{ "Prime Shields", TaskTypes.PrimeShields }
 		};
 
-		public static Dictionary<string, TaskTypes> polusAnimations = new Dictionary<string, TaskTypes>()
+		public static readonly Dictionary<string, TaskTypes> polusAnimations = new Dictionary<string, TaskTypes>()
 		{
 			{ "Clear Asteroids", TaskTypes.ClearAsteroids }
 		};
 
-		public static Dictionary<int, string> skeldVents = new Dictionary<int, string>()
+		public static readonly Dictionary<int, string> skeldVents = new Dictionary<int, string>()
 		{
 			{ 0, "Admin" },
 			{ 1, "Hallway" },
@@ -34,7 +34,7 @@ namespace HydraMenu.assets
 			{ 13, "Lower Navigation" }
 		};
 
-		public static Dictionary<int, string> polusVents = new Dictionary<int, string>()
+		public static readonly Dictionary<int, string> polusVents = new Dictionary<int, string>()
 		{
 			{ 0, "Electrical" },
 			{ 1, "Outside Electrical" },
