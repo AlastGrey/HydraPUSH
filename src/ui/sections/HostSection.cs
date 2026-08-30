@@ -18,8 +18,8 @@ namespace HydraMenu.ui.sections
 		private byte selectedMap = 0;
 		private Controls.PlayerColors selectedColor = 0;
 
-		public static Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
-		public static Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
+		public static readonly Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
+		public static readonly Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
 
 		public override void Render()
 		{
@@ -39,8 +39,6 @@ namespace HydraMenu.ui.sections
 			ModuleManager.disableCloseDoors.Enabled = GUILayout.Toggle(ModuleManager.disableCloseDoors.Enabled, "Disable Close Doors");
 			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
 			ModuleManager.disableVentClean.Enabled = GUILayout.Toggle(ModuleManager.disableVentClean.Enabled, "Disable Vent Clean");
-
-			ModuleManager.noKillCooldown.Enabled = GUILayout.Toggle(ModuleManager.noKillCooldown.Enabled, "No Kill Cooldown");
 
 			GUILayout.BeginHorizontal();
 			ModuleManager.blockLowLevels.Enabled = GUILayout.Toggle(ModuleManager.blockLowLevels.Enabled, $"Kick players with less than {ModuleManager.blockLowLevels.MinLevel} levels");

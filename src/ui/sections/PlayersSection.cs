@@ -406,7 +406,7 @@ namespace HydraMenu.ui.sections
 
 			Hydra.Log.LogInfo($"Attempting to kill {target.Data.PlayerName}, we are not the host so we have to use the CheckMurder RPC");
 
-			// The CheckMurder RPC handler will not authorize kills if you are not the imposter or you are inside a meeting
+			// The CheckMurder RPC handler will not authorize kills if you are not the imposter, or you are inside a meeting
 			// There are more checks, but I do not think it is worth adding them all here
 			if(!RoleManager.IsImpostorRole(PlayerControl.LocalPlayer.Data.RoleType))
 			{

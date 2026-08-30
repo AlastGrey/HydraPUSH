@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System;
-using UnityEngine;
 
 namespace HydraMenu.anticheat.rpc
 {

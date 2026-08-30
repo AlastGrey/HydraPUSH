@@ -62,15 +62,6 @@ namespace HydraMenu.modules
 			}
 		}
 
-		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
-		class MeetingEnd
-		{
-			static void Prefix()
-			{
-				PublishEvent(OnMeetingEnd);
-			}
-		}
-
 		[HarmonyPatch(typeof(GameData), nameof(GameData.OnDisconnected))]
 		class Disconnect
 		{
@@ -82,6 +73,15 @@ namespace HydraMenu.modules
 				HostSection.shipList.Clear();
 
 				PublishEvent(OnDisconnect);
+			}
+		}
+
+		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
+		class MeetingEnd
+		{
+			static void Prefix()
+			{
+				PublishEvent(OnMeetingEnd);
 			}
 		}
 
@@ -123,8 +123,9 @@ namespace HydraMenu.modules
 				PublishEvent(OnUseZipline, console);
 			}
 		}
+
 		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
-		class OnJoin
+		class PlayerJoin
 		{
 			static void Postfix(PlayerControl __instance)
 			{

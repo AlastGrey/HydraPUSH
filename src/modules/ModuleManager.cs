@@ -23,7 +23,6 @@ namespace HydraMenu.modules
 		public static DisableMeetings disableMeetings = new DisableMeetings();
 		public static DisableVentClean disableVentClean = new DisableVentClean();
 		public static FlipSkeld flipSkeld = new FlipSkeld();
-		public static NoKillCooldown noKillCooldown = new NoKillCooldown();
 
 		// Protections
 		public static AntiCrash antiCrash = new AntiCrash();
@@ -89,7 +88,6 @@ namespace HydraMenu.modules
 				disableMeetings,
 				disableVentClean,
 				flipSkeld,
-				noKillCooldown,
 
 				antiCrash,
 				antiKick,
