@@ -21,6 +21,7 @@ namespace HydraMenu.modules
 		public static DisableCloseDoors disableCloseDoors = new DisableCloseDoors();
 		public static DisableGameEnd disableGameEnd = new DisableGameEnd();
 		public static DisableMeetings disableMeetings = new DisableMeetings();
+		public static DisableVentClean disableVentClean = new DisableVentClean();
 		public static FlipSkeld flipSkeld = new FlipSkeld();
 		public static NoKillCooldown noKillCooldown = new NoKillCooldown();
 
@@ -86,6 +87,7 @@ namespace HydraMenu.modules
 				disableCloseDoors,
 				disableGameEnd,
 				disableMeetings,
+				disableVentClean,
 				flipSkeld,
 				noKillCooldown,
 
