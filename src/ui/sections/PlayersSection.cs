@@ -200,10 +200,10 @@ namespace HydraMenu.ui.sections
 				Utilities.KickPlayer(target);
 			}
 
-			Dictionary<int, string> vents = MapAssets.GetVents();
+			SortedDictionary<int, string> vents = MapAssets.GetVents();
 
-			GUILayout.Label($"Teleport player to vent: {vents[selectedVent]}");
-			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);
+			GUILayout.Label($"Teleport player to vent: {vents.GetValueOrDefault(selectedVent, "N/A")}");
+			selectedVent = Controls.HorizontalVentSlider(vents, selectedVent);
 			if(GUILayout.Button("Teleport"))
 			{
 				Teleporter.TeleportToVent(target, selectedVent);

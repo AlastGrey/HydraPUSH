@@ -218,6 +218,8 @@ namespace HydraMenu.anticheat
 
 		public static void LoadConfigData(AnticheatConfigData configData)
 		{
+			if(configData == null) return;
+
 			Enabled = configData.AcEnabled;
 			sendNotification = configData.SendNotification;
 			discardRpc = configData.DiscardRpc;

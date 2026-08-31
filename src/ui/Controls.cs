@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HydraMenu.ui
@@ -64,6 +65,15 @@ namespace HydraMenu.ui
 		public static PlayerColors HorizontalColorSlider(PlayerColors currentColor)
 		{
 			return (PlayerColors)GUILayout.HorizontalSlider((int)currentColor, 0, Palette.ColorNames.Length);
+		}
+
+		public static int HorizontalVentSlider(SortedDictionary<int, string> vents, int currentVent)
+		{
+			// Reset current vent if it is out ouf bounds
+			int firstKey = vents.Keys.First();
+			if(currentVent < firstKey || currentVent >= vents.Count) currentVent = firstKey;
+
+			return (int)GUILayout.HorizontalSlider(currentVent, firstKey, vents.Count - 1);
 		}
 
 		public static bool PlayerSpecificToggle(string label, PlayerControl selectedPlayer, ref PlayerControl currentPlayer)
