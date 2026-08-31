@@ -22,6 +22,7 @@ namespace HydraMenu.modules
 		public static DisableGameEnd disableGameEnd = new DisableGameEnd();
 		public static DisableMeetings disableMeetings = new DisableMeetings();
 		public static DisableVentClean disableVentClean = new DisableVentClean();
+		public static FakeShapeshiftBubble fakeShapeshiftBubble = new FakeShapeshiftBubble();
 		public static FlipSkeld flipSkeld = new FlipSkeld();
 		public static VoteImmune voteImmune = new VoteImmune();
 
@@ -88,6 +89,7 @@ namespace HydraMenu.modules
 				disableGameEnd,
 				disableMeetings,
 				disableVentClean,
+				fakeShapeshiftBubble,
 				flipSkeld,
 				voteImmune,
 

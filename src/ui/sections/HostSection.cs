@@ -40,6 +40,8 @@ namespace HydraMenu.ui.sections
 			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
 			ModuleManager.disableVentClean.Enabled = GUILayout.Toggle(ModuleManager.disableVentClean.Enabled, "Disable Vent Clean");
 
+			ModuleManager.fakeShapeshiftBubble.Enabled = GUILayout.Toggle(ModuleManager.fakeShapeshiftBubble.Enabled, "Fake Shapeshift Bubble");
+
 			GUILayout.BeginHorizontal();
 			ModuleManager.blockLowLevels.Enabled = GUILayout.Toggle(ModuleManager.blockLowLevels.Enabled, $"Kick players with less than {ModuleManager.blockLowLevels.MinLevel} levels");
 			ModuleManager.blockLowLevels.MinLevel = (uint)GUILayout.HorizontalSlider(ModuleManager.blockLowLevels.MinLevel, 0, 100);
