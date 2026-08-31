@@ -129,6 +129,25 @@ namespace HydraMenu.network
 			msgCount++;
 		}
 
+		public void QueueSendChatNote(PlayerControl source, byte playerId, ChatNoteTypes chatNote)
+		{
+			if(IsGlobal || AmTarget)
+			{
+				NetworkedPlayerInfo player = GameData.Instance.GetPlayerById(playerId);
+				HudManager.Instance.Chat.AddChatNote(player, chatNote);
+				if(AmTarget) return;
+			}
+
+			writer.StartMessage((byte)GameDataTypes.RpcFlag);
+			writer.WritePacked(source.NetId);
+			writer.Write((byte)RpcCalls.SendChatNote);
+			writer.Write(playerId);
+			writer.Write((byte)chatNote);
+			writer.EndMessage();
+
+			msgCount++;
+		}
+
 		public void QueueSnapTo(PlayerControl source, Vector2 position)
 		{
 			if(IsGlobal || AmTarget)
