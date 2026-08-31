@@ -38,6 +38,8 @@ namespace HydraMenu.modules
 
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
 
+		public static event Action<NetworkedPlayerInfo, NetworkedPlayerInfo> OnPlayerCastVote;
+
 		// Network Events
 		public static event Action<InnerNetObject> OnNetObjectSpawn;
 
@@ -361,6 +363,19 @@ namespace HydraMenu.modules
 				}
 
 				PublishEvent(OnPlayerVotekick, source, target);
+			}
+		}
+
+		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
+		class PlayerCastVote
+		{
+			static void Postfix(PlayerId srcPlayerId, PlayerId suspectPlayerId)
+			{
+				NetworkedPlayerInfo voter = GameData.Instance.GetPlayerById(srcPlayerId);
+				NetworkedPlayerInfo votee = GameData.Instance.GetPlayerById(suspectPlayerId);
+				if(voter == null || votee == null) return;
+
+				PublishEvent(OnPlayerCastVote, voter, votee);
 			}
 		}
 

@@ -214,6 +214,7 @@ namespace HydraMenu.ui.sections
 
 			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies As", target, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.discoHost.Enabled = Controls.PlayerSpecificToggle("Disco Mode", target, Hydra.routines.discoHost.targets);
+			ModuleManager.voteImmune.Enabled = Controls.PlayerSpecificToggle("Vote Immune", target, ModuleManager.voteImmune.targets);
 			Hydra.routines.voteSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Votes As", target, Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Force Meeting As"))
