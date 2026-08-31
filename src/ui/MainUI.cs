@@ -206,17 +206,19 @@ namespace HydraMenu.ui
 			};
 		}
 
-		public void LoadConfigData(MainUIConfig config)
+		public void LoadConfigData(MainUIConfig configData)
 		{
-			if(config.MenuKey != KeyCode.None)
+			if(configData == null) return;
+
+			if(configData.MenuKey != KeyCode.None)
 			{
-				Hydra.mainUI.menuKey = config.MenuKey;
+				Hydra.mainUI.menuKey = configData.MenuKey;
 			}
 
-			Styles.primaryColor = (Styles.UIColors)Math.Clamp((int)config.PrimaryColor, 0, Styles.ColorValues.Count - 1);
-			Styles.menuOpacity = Mathf.Clamp(config.MenuOpacity, 0.0f, 1.0f);
-			scale = Mathf.Clamp(config.UiScale, 0.5f, 2.0f);
-			Hydra.notifications.disableNotifications = config.DisableNotifications;
+			Styles.primaryColor = (Styles.UIColors)Math.Clamp((int)configData.PrimaryColor, 0, Styles.ColorValues.Count - 1);
+			Styles.menuOpacity = Mathf.Clamp(configData.MenuOpacity, 0.0f, 1.0f);
+			scale = Mathf.Clamp(configData.UiScale, 0.5f, 2.0f);
+			Hydra.notifications.disableNotifications = configData.DisableNotifications;
 		}
 	}
 }

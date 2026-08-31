@@ -6,8 +6,8 @@ namespace HydraMenu.modules.troll
 	{
 		public AutoExposeImpostors() : base("AutoExposeImpostors") { }
 
-		public float MIN_KILL_DISTANCE = 1.0f;
-		public float MAX_DISTANCE = 5.0f;
+		public readonly float MIN_KILL_DISTANCE = 1.0f;
+		public readonly float MAX_DISTANCE = 5.0f;
 
 		public bool ExposeOnMurder { get; set; } = true;
 		public bool ExposeOnShapeshift { get; set; } = true;

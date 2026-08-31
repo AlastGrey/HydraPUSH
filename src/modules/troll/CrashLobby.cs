@@ -1,6 +1,4 @@
-﻿using HydraMenu.network;
-
-namespace HydraMenu.modules.troll
+﻿namespace HydraMenu.modules.troll
 {
 	internal class CrashLobby : Module
 	{

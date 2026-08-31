@@ -200,10 +200,10 @@ namespace HydraMenu.ui.sections
 				Utilities.KickPlayer(target);
 			}
 
-			Dictionary<int, string> vents = MapAssets.GetVents();
+			SortedDictionary<int, string> vents = MapAssets.GetVents();
 
-			GUILayout.Label($"Teleport player to vent: {vents[selectedVent]}");
-			selectedVent = (int)GUILayout.HorizontalSlider(selectedVent, 0, vents.Count - 1);
+			GUILayout.Label($"Teleport player to vent: {vents.GetValueOrDefault(selectedVent, "N/A")}");
+			selectedVent = Controls.HorizontalVentSlider(vents, selectedVent);
 			if(GUILayout.Button("Teleport"))
 			{
 				Teleporter.TeleportToVent(target, selectedVent);
@@ -214,6 +214,7 @@ namespace HydraMenu.ui.sections
 
 			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies As", target, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.discoHost.Enabled = Controls.PlayerSpecificToggle("Disco Mode", target, Hydra.routines.discoHost.targets);
+			ModuleManager.voteImmune.Enabled = Controls.PlayerSpecificToggle("Vote Immune", target, ModuleManager.voteImmune.targets);
 			Hydra.routines.voteSpammer.Enabled = Controls.PlayerSpecificToggle("Spam Votes As", target, Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Force Meeting As"))
@@ -406,7 +407,7 @@ namespace HydraMenu.ui.sections
 
 			Hydra.Log.LogInfo($"Attempting to kill {target.Data.PlayerName}, we are not the host so we have to use the CheckMurder RPC");
 
-			// The CheckMurder RPC handler will not authorize kills if you are not the imposter or you are inside a meeting
+			// The CheckMurder RPC handler will not authorize kills if you are not the imposter, or you are inside a meeting
 			// There are more checks, but I do not think it is worth adding them all here
 			if(!RoleManager.IsImpostorRole(PlayerControl.LocalPlayer.Data.RoleType))
 			{

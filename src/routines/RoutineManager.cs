@@ -10,6 +10,7 @@ namespace HydraMenu.routines
 		public readonly AutoTriggerSporesRoutine autoTriggerSpores = new AutoTriggerSporesRoutine();
 		public readonly DiscoHostRoutine discoHost = new DiscoHostRoutine();
 		public readonly DoorTrollerRoutine doorTroller = new DoorTrollerRoutine();
+		public readonly GlitterBomb glitterBomb = new GlitterBomb();
 		public readonly JailPlayerRoutine jailPlayer = new JailPlayerRoutine();
 		public readonly PetPlayerRoutine petPlayer = new PetPlayerRoutine();
 		public readonly PlayerFollowerRoutine playerFollower = new PlayerFollowerRoutine();
@@ -22,7 +23,7 @@ namespace HydraMenu.routines
 
 		public RoutineManager()
 		{
-			routineList = [ autoTriggerSpores, discoHost, doorTroller, jailPlayer, petPlayer, playerFollower, reportBodySpam, teleportSpammer, voteSpammer, ziplineSpammer ];
+			routineList = [ autoTriggerSpores, discoHost, doorTroller, glitterBomb, jailPlayer, petPlayer, playerFollower, reportBodySpam, teleportSpammer, voteSpammer, ziplineSpammer ];
 		}
 
 		public void Update()

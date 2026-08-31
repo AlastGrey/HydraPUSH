@@ -38,6 +38,8 @@ namespace HydraMenu.modules
 
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
 
+		public static event Action<NetworkedPlayerInfo, NetworkedPlayerInfo> OnPlayerCastVote;
+
 		// Network Events
 		public static event Action<InnerNetObject> OnNetObjectSpawn;
 
@@ -62,15 +64,6 @@ namespace HydraMenu.modules
 			}
 		}
 
-		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
-		class MeetingEnd
-		{
-			static void Prefix()
-			{
-				PublishEvent(OnMeetingEnd);
-			}
-		}
-
 		[HarmonyPatch(typeof(GameData), nameof(GameData.OnDisconnected))]
 		class Disconnect
 		{
@@ -82,6 +75,15 @@ namespace HydraMenu.modules
 				HostSection.shipList.Clear();
 
 				PublishEvent(OnDisconnect);
+			}
+		}
+
+		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
+		class MeetingEnd
+		{
+			static void Prefix()
+			{
+				PublishEvent(OnMeetingEnd);
 			}
 		}
 
@@ -123,8 +125,9 @@ namespace HydraMenu.modules
 				PublishEvent(OnUseZipline, console);
 			}
 		}
+
 		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
-		class OnJoin
+		class PlayerJoin
 		{
 			static void Postfix(PlayerControl __instance)
 			{
@@ -360,6 +363,19 @@ namespace HydraMenu.modules
 				}
 
 				PublishEvent(OnPlayerVotekick, source, target);
+			}
+		}
+
+		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
+		class PlayerCastVote
+		{
+			static void Postfix(PlayerId srcPlayerId, PlayerId suspectPlayerId)
+			{
+				NetworkedPlayerInfo voter = GameData.Instance.GetPlayerById(srcPlayerId);
+				NetworkedPlayerInfo votee = GameData.Instance.GetPlayerById(suspectPlayerId);
+				if(voter == null || votee == null) return;
+
+				PublishEvent(OnPlayerCastVote, voter, votee);
 			}
 		}
 

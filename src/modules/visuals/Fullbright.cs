@@ -1,5 +1,3 @@
-using HarmonyLib;
-
 namespace HydraMenu.modules.visuals
 {
 	internal class Fullbright : Module

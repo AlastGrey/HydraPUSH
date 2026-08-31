@@ -18,8 +18,8 @@ namespace HydraMenu.ui.sections
 		private byte selectedMap = 0;
 		private Controls.PlayerColors selectedColor = 0;
 
-		public static Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
-		public static Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
+		public static readonly Queue<InnerNetObject> lobbyList = new Queue<InnerNetObject>();
+		public static readonly Queue<InnerNetObject> shipList = new Queue<InnerNetObject>();
 
 		public override void Render()
 		{
@@ -40,7 +40,7 @@ namespace HydraMenu.ui.sections
 			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
 			ModuleManager.disableVentClean.Enabled = GUILayout.Toggle(ModuleManager.disableVentClean.Enabled, "Disable Vent Clean");
 
-			ModuleManager.noKillCooldown.Enabled = GUILayout.Toggle(ModuleManager.noKillCooldown.Enabled, "No Kill Cooldown");
+			ModuleManager.fakeShapeshiftBubble.Enabled = GUILayout.Toggle(ModuleManager.fakeShapeshiftBubble.Enabled, "Fake Shapeshift Bubble");
 
 			GUILayout.BeginHorizontal();
 			ModuleManager.blockLowLevels.Enabled = GUILayout.Toggle(ModuleManager.blockLowLevels.Enabled, $"Kick players with less than {ModuleManager.blockLowLevels.MinLevel} levels");
@@ -137,6 +137,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.Label("Meeting Controls:");
 			ModuleManager.disableMeetings.Enabled = GUILayout.Toggle(ModuleManager.disableMeetings.Enabled, "Disable Meetings");
 			Hydra.routines.reportBodySpam.Enabled = GUILayout.Toggle(Hydra.routines.reportBodySpam.Enabled, "Spam Report Bodies");
+			ModuleManager.voteImmune.Enabled = Controls.PlayerSpecificToggle("Vote Immune", PlayerControl.LocalPlayer, ModuleManager.voteImmune.targets);
 			Hydra.routines.voteSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Spam Votes", Hydra.routines.voteSpammer.targets);
 
 			if(GUILayout.Button("Close Meeting"))
