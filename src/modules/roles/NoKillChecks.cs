@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using HydraMenu.network;
 
 namespace HydraMenu.modules.roles
 {
@@ -11,8 +12,9 @@ namespace HydraMenu.modules.roles
 			get { return ModuleManager.noKillChecks; }
 		}
 
-		public bool NoKillCooldown { get; set; } = false;
 		public bool KillOtherImpostors { get; set; } = false;
+		public bool KillAsPhantom { get; set; } = false;
+		public bool NoKillCooldown { get; set; } = false;
 		public bool KillGhosts { get; set; } = false;
 
 		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
@@ -45,7 +47,7 @@ namespace HydraMenu.modules.roles
 			{
 				if(!Instance.Enabled) return true;
 
-				__result = IsValidTarget(target) && !__instance.isInvisible;
+				__result = IsValidTarget(target) && (!__instance.isInvisible || Instance.KillAsPhantom);
 				return false;
 			}
 		}
@@ -66,9 +68,43 @@ namespace HydraMenu.modules.roles
 		{
 			static bool Prefix(PlayerControl __instance, PlayerControl target)
 			{
-				if(!Instance.Enabled || (!AmongUsClient.Instance.AmHost && !Utilities.IsAnticheatPresent())) return true;
+				if(!Instance.Enabled || (!AmongUsClient.Instance.AmHost && Utilities.IsAnticheatPresent())) return true;
 
 				__instance.RpcMurderPlayer(target, true);
+				return false;
+			}
+		}
+
+		// The backend AU servers rely on the CheckVanish and CheckAppear RPCs to know if a player has vanished
+		// This information is then used by the server's CheckMurder RPC handler to know if a kill should be authorized
+		// No idea why, but Innersloth has secured the CheckVanish and CheckAppear RPCs to hell the Vanish and Appear RPCs have almost-zero protection
+		// Sending CheckVanish in the lobby, as non-phantom, or while already phantomed, in cooldown, or with the maxDuration field mismatched to the game settings phantom duration will result in a ban
+		// Sending CheckAppear in the lobby, as non-phantom, or while non-vanished, will also result in a kick from the lobby
+		// But sending Vanish or Appear in any of those conditions will result in the RPC being relayed to other players
+		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckVanish))]
+		class VanishBypass
+		{
+			static bool Prefix(PlayerControl __instance)
+			{
+				if(!Instance.Enabled || !Instance.KillAsPhantom) return true;
+
+				BatchedMessage batch = new BatchedMessage();
+				batch.QueueVanish(__instance);
+				batch.FinishBatch();
+				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
+		class AppearBypass
+		{
+			static bool Prefix(PlayerControl __instance, bool shouldAnimate)
+			{
+				if(!Instance.Enabled || !Instance.KillAsPhantom) return true;
+
+				BatchedMessage batch = new BatchedMessage();
+				batch.QueueAppear(__instance,  shouldAnimate);
+				batch.FinishBatch();
 				return false;
 			}
 		}

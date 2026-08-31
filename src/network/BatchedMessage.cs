@@ -429,6 +429,38 @@ namespace HydraMenu.network
 			msgCount++;
 		}
 
+		public void QueueVanish(PlayerControl source)
+		{
+			if(IsGlobal || AmTarget)
+			{
+				source.HandleServerVanish();
+				if(AmTarget) return;
+			}
+
+			writer.StartMessage((byte)GameDataTypes.RpcFlag);
+			writer.WritePacked(source.NetId);
+			writer.Write((byte)RpcCalls.StartVanish);
+			writer.EndMessage();
+
+			msgCount++;
+		}
+
+		public void QueueAppear(PlayerControl source, bool shouldAnimate = true)
+		{
+			if(IsGlobal || AmTarget)
+			{
+				source.HandleServerAppear(shouldAnimate);
+				if(AmTarget) return;
+			}
+
+			writer.StartMessage((byte)GameDataTypes.RpcFlag);
+			writer.WritePacked(source.NetId);
+			writer.Write((byte)RpcCalls.StartVanish);
+			writer.EndMessage();
+
+			msgCount++;
+		}
+
 		public void FinishBatch()
 		{
 			writer.EndMessage();
