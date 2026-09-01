@@ -8,6 +8,7 @@ Hydra is a [BepInEx](https://github.com/BepInEx/BepInEx) Among Us mod built with
 We have a Discord server, feel free to join and talk, ask for help, or offer suggestions: https://discord.gg/N7azGPHm5F
 
 # Features
+- Zero AI-generated code
 - In-game notifications
 - Show chat messages by ghosts (Useful for moderation to determine if players are acting fair)
 - Always visible chat button
@@ -44,11 +45,9 @@ To download Hydra, you simply need to go to the [Releases](https://github.com/Mr
 You can access the Hydra UI by pressing `Insert` on your keyboard. Depending on your keyboard, you may have to toggle Num Lock or press the function key alongside the Insert key to get the menu to show up. After pressing Insert, you should see the Hydra UI. The Hydra UI has multiple parts: the sections pane, and the features panes. The sections pane will have a list of tabs such as `Self`, `Host`, and `Anticheat`. Pressing any of these tabs will show the features for this section in the Features Pane. The Features Pane will have sliders, buttons, and checkboxes which can be used to configure Hydra.
 
 # TODO
-- [ ] Improve anticheat with more checks (such as sabotaging as crewmate)
-- [x] Add scrollbars to UI sections
-- [x] Show player role and colors in Players UI section
+- [x] Improve anticheat with more checks (such as sabotaging as crewmate)
 - [ ] Explore the modded vanilla protocol which seems to have a much more lenient anticheat
-- [ ] Saveable configs
+- [x] Saveable configs
 
 # Disclaimer
 > [!CAUTION]
