@@ -452,6 +452,7 @@ namespace HydraMenu.network
 		{
 			if(IsGlobal || AmTarget)
 			{
+				source.SetRoleInvisibility(true, true, false);
 				source.HandleServerVanish();
 				if(AmTarget) return;
 			}
@@ -474,7 +475,8 @@ namespace HydraMenu.network
 
 			writer.StartMessage((byte)GameDataTypes.RpcFlag);
 			writer.WritePacked(source.NetId);
-			writer.Write((byte)RpcCalls.StartVanish);
+			writer.Write((byte)RpcCalls.StartAppear);
+			writer.Write(shouldAnimate);
 			writer.EndMessage();
 
 			msgCount++;
