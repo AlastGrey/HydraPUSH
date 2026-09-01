@@ -103,10 +103,8 @@ namespace HydraMenu.ui
 
 		public static bool PlayerSpecificToggle(string label, PlayerControl selectedPlayer, HashSet<int> currentPlayers)
 		{
-			int hashCode = selectedPlayer.GetHashCode();
-
 			GUIStyle toggle = new GUIStyle(GUI.skin.toggle);
-			bool isSelected = selectedPlayer != null && currentPlayers.Contains(hashCode);
+			bool isSelected = selectedPlayer != null && currentPlayers.Contains(selectedPlayer.GetHashCode());
 
 			if(isSelected)
 			{
@@ -118,15 +116,15 @@ namespace HydraMenu.ui
 			// The GUILayout::Toggle function always returns the current state of the toggle
 			// It is possible to determine when the toggle is changed, however it requires messy hacks involving getters and setters
 			// Using a GUILayout.Button disguised as a toggle that triggers only when the button is pressed is more practical here
-			if(GUILayout.Button(label, toggle))
+			if(GUILayout.Button(label, toggle) && selectedPlayer != null)
 			{
 				if(!isSelected)
 				{
-					currentPlayers.Add(hashCode);
+					currentPlayers.Add(selectedPlayer.GetHashCode());
 				}
 				else
 				{
-					currentPlayers.Remove(hashCode);
+					currentPlayers.Remove(selectedPlayer.GetHashCode());
 				}
 			}
 

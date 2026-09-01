@@ -28,8 +28,10 @@ namespace HydraMenu.ui.sections
 			ModuleManager.autoReportBodies.Enabled = Controls.PlayerSpecificToggle("Auto Report Bodies", PlayerControl.LocalPlayer, ref ModuleManager.autoReportBodies.target);
 			Hydra.routines.autoTriggerSpores.Enabled = GUILayout.Toggle(Hydra.routines.autoTriggerSpores.Enabled, "Auto Trigger Spores");
 			ModuleManager.disableCameras.Enabled = GUILayout.Toggle(ModuleManager.disableCameras.Enabled, "Disable Security Cameras");
+			ModuleManager.disableCloseDoors.Enabled = GUILayout.Toggle(ModuleManager.disableCloseDoors.Enabled, "Disable Close Doors");
 			ModuleManager.disableSabotages.Enabled = GUILayout.Toggle(ModuleManager.disableSabotages.Enabled, "Disable Sabotages");
 			ModuleManager.disableVents.Enabled = GUILayout.Toggle(ModuleManager.disableVents.Enabled, "Disable Vents");
+			Hydra.routines.glitterBomb.Enabled = GUILayout.Toggle(Hydra.routines.glitterBomb.Enabled, "Glitterbomb");
 			Hydra.routines.ziplineSpammer.Enabled = Controls.GlobalPlayerSpecificToggle("Zipline Spammer", Hydra.routines.ziplineSpammer.targets);
 
 			if(GUILayout.Button("Kick All Players"))

@@ -1,4 +1,5 @@
 ﻿using HydraMenu.modules;
+using HydraMenu.network;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,12 +20,23 @@ namespace HydraMenu.routines
 			if(timeElapsed < VOTE_DELAY) return;
 			timeElapsed = 0.0f;
 
+			int packingLimit = AmongUsClient.Instance.GetMaxMessagePackingLimit();
+			BatchedMessage batch = new BatchedMessage();
+
 			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
 			{
 				if(!IsGlobal && !targets.Contains(player.GetHashCode())) continue;
 
-				PlayerControl.LocalPlayer.RpcSendChatNote(player.PlayerId, ChatNoteTypes.DidVote);
+				if(batch.msgCount >= packingLimit)
+				{
+					batch.FinishBatch();
+					batch = new BatchedMessage();
+				}
+
+				batch.QueueSendChatNote(PlayerControl.LocalPlayer, player.PlayerId, ChatNoteTypes.DidVote);
 			}
+
+			batch.FinishBatch();
 		}
 
 		private bool IsGlobal

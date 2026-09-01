@@ -36,7 +36,6 @@ namespace HydraMenu.ui.sections
 
 			ModuleManager.flipSkeld.Enabled = GUILayout.Toggle(ModuleManager.flipSkeld.Enabled, "Use Flipped Skeld Map");
 
-			ModuleManager.disableCloseDoors.Enabled = GUILayout.Toggle(ModuleManager.disableCloseDoors.Enabled, "Disable Close Doors");
 			ModuleManager.disableGameEnd.Enabled = GUILayout.Toggle(ModuleManager.disableGameEnd.Enabled, "Disable Game End");
 			ModuleManager.disableVentClean.Enabled = GUILayout.Toggle(ModuleManager.disableVentClean.Enabled, "Disable Vent Clean");
 
