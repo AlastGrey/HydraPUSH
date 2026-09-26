@@ -180,6 +180,13 @@ namespace HydraMenu.ui.sections
 				return;
 			}
 
+			// PlayerControl::RpcSetRole has checks against playing the intro cutscene in Freeplay
+			// To avoid a blackscreen in Freeplay, we force the intro cutscene to start
+			if(AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
+			{
+				HudManager.Instance.StartCoroutine(HudManager.Instance.CoShowIntro());
+			}
+
 			AmongUsClient.Instance.StartGame();
 		}
 
