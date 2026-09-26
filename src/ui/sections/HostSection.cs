@@ -48,7 +48,7 @@ namespace HydraMenu.ui.sections
 
 			if(GUILayout.Button("Force Start Game"))
 			{
-				AmongUsClient.Instance.StartGame();
+				ForceStartGame();
 			}
 
 			if(GUILayout.Button("Kill Everyone"))
@@ -169,6 +169,18 @@ namespace HydraMenu.ui.sections
 
 			GUILayout.Label($"Color randomization delay: {Hydra.routines.discoHost.RandomizationDelay:F2}s");
 			Hydra.routines.discoHost.RandomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.RandomizationDelay, 0.1f, 2.0f);
+		}
+
+		private void ForceStartGame()
+		{
+			// Local lobbies are the only lobbies where we can start the game without host
+			if(AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame && !AmongUsClient.Instance.AmHost)
+			{
+				Hydra.notifications.Send("Start Game", "This feature can only be used if you are the host of the lobby.");
+				return;
+			}
+
+			AmongUsClient.Instance.StartGame();
 		}
 
 		private static void KillAllPlayers()
