@@ -180,14 +180,22 @@ namespace HydraMenu.ui.sections
 				return;
 			}
 
+			// The vanilla anticheat prevents players from sending a ClientReady message more than once
+			// If we attempt to start the game twice, then all players will send another ClientReady message, and the entire lobby will be kicked
+			if(AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started && Utilities.IsAnticheatPresent())
+			{
+				Hydra.notifications.Send("Start Game", "The game has already been started.");
+				return;
+			}
+
+			AmongUsClient.Instance.StartGame();
+
 			// PlayerControl::RpcSetRole has checks against playing the intro cutscene in Freeplay
 			// To avoid a blackscreen in Freeplay, we force the intro cutscene to start
 			if(AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
 			{
 				HudManager.Instance.StartCoroutine(HudManager.Instance.CoShowIntro());
 			}
-
-			AmongUsClient.Instance.StartGame();
 		}
 
 		private static void KillAllPlayers()
