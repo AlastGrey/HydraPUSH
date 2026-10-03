@@ -48,7 +48,7 @@ namespace HydraMenu.ui.sections
 
 			if(GUILayout.Button("Force Start Game"))
 			{
-				AmongUsClient.Instance.StartGame();
+				ForceStartGame();
 			}
 
 			if(GUILayout.Button("Kill Everyone"))
@@ -76,6 +76,11 @@ namespace HydraMenu.ui.sections
 			}
 			GUILayout.EndHorizontal();
 
+			if(GUILayout.Button("Temp Ban All Players"))
+			{
+				ModuleManager.tempBanAll.Enabled = true;
+			}
+
 			GUILayout.Space(5);
 			GUILayout.Label("Map Spawner:");
 
@@ -85,17 +90,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Map"))
 			{
-				if(shipList.Count != 0)
-				{
-					InnerNetObject ship = shipList.Dequeue();
-					ship.Despawn();
-
-					Hydra.notifications.Send("Game Map", "The current map has been despawned.", 5);
-				}
-				else
-				{
-					Hydra.notifications.Send("Game Map", "The game map has already been despawned.", 10);
-				}
+				DespawnMap();
 			}
 
 			if(GUILayout.Button("Spawn Map"))
@@ -107,17 +102,7 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Despawn Lobby"))
 			{
-				if(lobbyList.Count > 0)
-				{
-					InnerNetObject lobby = lobbyList.Dequeue();
-					lobby.Despawn();
-
-					Hydra.notifications.Send("Lobby Map", "The lobby map has been despawned.", 5);
-				}
-				else
-				{
-					Hydra.notifications.Send("Lobby Map", "The lobby map has already been despawned.", 10);
-				}
+				DespawnLobby();
 			}
 
 			if(GUILayout.Button("Spawn Lobby"))
@@ -141,19 +126,7 @@ namespace HydraMenu.ui.sections
 
 			if(GUILayout.Button("Close Meeting"))
 			{
-				if(MeetingHud.Instance == null)
-				{
-					Hydra.notifications.Send("Skip Meeting", "This option can only be used in a meeting.");
-				}
-				else
-				{
-					MeetingHud.VoterState[] votes = Array.Empty<MeetingHud.VoterState>();
-
-					BatchedMessage batch = new BatchedMessage();
-					batch.QueueVotingComplete(votes, null, false, false, 0);
-					batch.QueueCloseMeeting();
-					batch.FinishBatch();
-				}
+				CloseMeeting();
 			}
 
 			GUILayout.Space(5);
@@ -198,6 +171,33 @@ namespace HydraMenu.ui.sections
 			Hydra.routines.discoHost.RandomizationDelay = GUILayout.HorizontalSlider(Hydra.routines.discoHost.RandomizationDelay, 0.1f, 2.0f);
 		}
 
+		private void ForceStartGame()
+		{
+			// Local lobbies are the only lobbies where we can start the game without host
+			if(AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame && !AmongUsClient.Instance.AmHost)
+			{
+				Hydra.notifications.Send("Start Game", "This feature can only be used if you are the host of the lobby.");
+				return;
+			}
+
+			// The vanilla anticheat prevents players from sending a ClientReady message more than once
+			// If we attempt to start the game twice, then all players will send another ClientReady message, and the entire lobby will be kicked
+			if(AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started && Utilities.IsAnticheatPresent())
+			{
+				Hydra.notifications.Send("Start Game", "The game has already been started.");
+				return;
+			}
+
+			AmongUsClient.Instance.StartGame();
+
+			// PlayerControl::RpcSetRole has checks against playing the intro cutscene in Freeplay
+			// To avoid a blackscreen in Freeplay, we force the intro cutscene to start
+			if(AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
+			{
+				HudManager.Instance.StartCoroutine(HudManager.Instance.CoShowIntro());
+			}
+		}
+
 		private static void KillAllPlayers()
 		{
 			bool hasAnticheat = Utilities.IsAnticheatPresent();
@@ -239,11 +239,11 @@ namespace HydraMenu.ui.sections
 
 			if(Utilities.IsAnticheatPresent() && !AmongUsClient.Instance.AmHost)
 			{
-				Hydra.notifications.Send("Lobby Spawner", "This feature can only be used if you are the host of the lobby.");
+				Hydra.notifications.Send("Spawn Lobby", "This feature can only be used if you are the host of the lobby.");
 				return;
 			}
 
-			InnerNetObject lobbyPrefab = AmongUsClient.Instance.NonAddressableSpawnableObjects.First((obj) => obj.SpawnId == (uint)network.Constants.SpawnType.LobbyBehavior);
+			InnerNetObject lobbyPrefab = AmongUsClient.Instance.NonAddressableSpawnableObjects.First((obj) => obj.SpawnId == (uint)SpawnType.LobbyBehavior);
 			if(lobbyPrefab == null)
 			{
 				Hydra.Log.LogError($"Failed to find LobbyBehavior prefab in NonAddressableSpawnableObjects");
@@ -256,10 +256,32 @@ namespace HydraMenu.ui.sections
 			batch.QueueSpawn(lobby, -2, SpawnFlags.None);
 			batch.FinishBatch();
 
-			Hydra.notifications.Send("Lobby Spawner", "A new instance of the lobby has been spawned", 5);
+			Hydra.notifications.Send("Spawn Lobby", "A new instance of the lobby has been spawned.", 5);
 		}
 
-		private static IEnumerator SpawnMap(byte mapId)
+		private static void DespawnLobby()
+		{
+			Hydra.Log.LogInfo($"Attempting to despawn lobby");
+
+			if(Utilities.IsAnticheatPresent() && !AmongUsClient.Instance.AmHost)
+			{
+				Hydra.notifications.Send("Despawn Lobby", "This feature can only be used if you are the host of the lobby.");
+				return;
+			}
+
+			if(lobbyList.Count == 0)
+			{
+				Hydra.notifications.Send("Despawn Lobby", "The lobby map has already been despawned.", 10);
+				return;
+			}
+
+			InnerNetObject lobby = lobbyList.Dequeue();
+			lobby.Despawn();
+
+			Hydra.notifications.Send("Despawn Lobby", "The lobby map has been despawned.", 5);
+		}
+
+		public static IEnumerator SpawnMap(byte mapId)
 		{
 			Hydra.Log.LogInfo($"Attempting to spawn in map id {mapId}");
 
@@ -268,7 +290,7 @@ namespace HydraMenu.ui.sections
 			// however +25 modded protocol lobbies, while having much of their anticheat checks disabled, still has checks against non-hosts sending spawn messages
 			if(Utilities.IsAnticheatPresent() && !AmongUsClient.Instance.AmHost)
 			{
-				Hydra.notifications.Send("Map Spawner", "This feature can only be used if you are the host of the lobby.");
+				Hydra.notifications.Send("Spawn Map", "This feature can only be used if you are the host of the lobby.");
 				yield break;
 			}
 
@@ -281,7 +303,49 @@ namespace HydraMenu.ui.sections
 			batch.QueueSpawn(ship, -2, SpawnFlags.None);
 			batch.FinishBatch();
 
-			Hydra.notifications.Send("Map Spawner", $"{(MapNames)mapId} has been spawned.", 5);
+			Hydra.notifications.Send("Spawn Map", $"{(MapNames)mapId} has been spawned.", 5);
+		}
+
+		private static void DespawnMap()
+		{
+			Hydra.Log.LogInfo($"Attempting to despawn map");
+
+			if(Utilities.IsAnticheatPresent() && !AmongUsClient.Instance.AmHost)
+			{
+				Hydra.notifications.Send("Despawn Map", "This feature can only be used if you are the host of the lobby.");
+				return;
+			}
+
+			if(shipList.Count == 0)
+			{
+				Hydra.notifications.Send("Despawn Map", "The current map has already been despawned.", 10);
+				return;
+			}
+
+			InnerNetObject ship = shipList.Dequeue();
+			ship.Despawn();
+
+			Hydra.notifications.Send("Despawn Map", "The current map has been despawned.", 5);
+		}
+
+		private void CloseMeeting()
+		{
+			if(Utilities.IsAnticheatPresent() && !AmongUsClient.Instance.AmHost)
+			{
+				Hydra.notifications.Send("Close Meeting", "This feature can only be used if you are the host of the lobby.");
+				return;
+			}
+
+			if(MeetingHud.Instance == null)
+			{
+				Hydra.notifications.Send("Close Meeting", "This option can only be during a meeting.");
+				return;
+			}
+
+			BatchedMessage batch = new BatchedMessage();
+			batch.QueueVotingComplete(Array.Empty<MeetingHud.VoterState>(), null, false, false, 0);
+			batch.QueueCloseMeeting();
+			batch.FinishBatch();
 		}
 
 		private static IEnumerator ShapeshiftAll(PlayerControl target)
@@ -292,7 +356,8 @@ namespace HydraMenu.ui.sections
 				yield break;
 			}
 
-			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+			PlayerControl[] allPlayers = PlayerControl.AllPlayerControls.ToArray();
+			foreach(PlayerControl player in allPlayers)
 			{
 				if(player == target || player.shapeshiftTargetPlayerId == target.PlayerId) continue;
 
@@ -311,7 +376,8 @@ namespace HydraMenu.ui.sections
 				yield break;
 			}
 
-			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+			PlayerControl[] allPlayers = PlayerControl.AllPlayerControls.ToArray();
+			foreach(PlayerControl player in allPlayers)
 			{
 				if(player.shapeshiftTargetPlayerId == -1) continue;
 

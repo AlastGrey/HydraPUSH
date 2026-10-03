@@ -1,4 +1,5 @@
 ﻿using HydraMenu.modules.host;
+using HydraMenu.modules.misc;
 using HydraMenu.modules.protections;
 using HydraMenu.modules.roles;
 using HydraMenu.modules.self;
@@ -23,7 +24,12 @@ namespace HydraMenu.modules
 		public static DisableVentClean disableVentClean = new DisableVentClean();
 		public static FakeShapeshiftBubble fakeShapeshiftBubble = new FakeShapeshiftBubble();
 		public static FlipSkeld flipSkeld = new FlipSkeld();
+		public static TempBanAll tempBanAll = new TempBanAll();
 		public static VoteImmune voteImmune = new VoteImmune();
+
+		// Misc
+		public static ChatLogger chatLogger = new ChatLogger();
+		public static Whisper whisper = new Whisper();
 
 		// Protections
 		public static AntiCrash antiCrash = new AntiCrash();
@@ -77,9 +83,9 @@ namespace HydraMenu.modules
 		public static SkipShhhAnimation skipShhhAnimation = new SkipShhhAnimation();
 		public static SpectatePlayer spectatePlayer = new SpectatePlayer();
 
-		public static readonly Module[] moduleList;
+		public readonly Module[] moduleList;
 
-		static ModuleManager()
+		public ModuleManager()
 		{
 			moduleList = [
 				assignRoles,
@@ -90,7 +96,11 @@ namespace HydraMenu.modules
 				disableVentClean,
 				fakeShapeshiftBubble,
 				flipSkeld,
+				tempBanAll,
 				voteImmune,
+
+				chatLogger,
+				whisper,
 
 				antiCrash,
 				antiKick,

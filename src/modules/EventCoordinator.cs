@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Hazel;
+using HydraMenu.network;
 using HydraMenu.ui.sections;
 using Il2CppInterop.Runtime;
 using InnerNet;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HydraMenu.modules
 {
@@ -39,6 +41,10 @@ namespace HydraMenu.modules
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
 
 		public static event Action<NetworkedPlayerInfo, NetworkedPlayerInfo> OnPlayerCastVote;
+
+		// Sabotage Events
+		public static event Action OnHudOverrideSabotage;
+		public static event Action OnHudOverrideRepair;
 
 		// Network Events
 		public static event Action<InnerNetObject> OnNetObjectSpawn;
@@ -168,8 +174,6 @@ namespace HydraMenu.modules
 		{
 			static void Prefix(PlayerControl sourcePlayer, string chatText)
 			{
-				Hydra.Log.LogMessage($"[ChatLogger] {sourcePlayer.Data.PlayerName}: {chatText}");
-
 				PublishEvent(OnPlayerChat, sourcePlayer, chatText);
 			}
 		}
@@ -177,7 +181,8 @@ namespace HydraMenu.modules
 		[HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.Deserialize))]
 		class PlayerVentNonHost
 		{
-			static void Prefix(VentilationSystem __instance, MessageReader reader) {
+			static void Prefix(VentilationSystem __instance, MessageReader reader)
+			{
 				int oldReadPosition = reader.Position;
 
 				int ventCleans = reader.ReadPackedInt32();
@@ -367,7 +372,7 @@ namespace HydraMenu.modules
 		}
 
 		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
-		class PlayerCastVote
+		class PlayerCastVoteHost
 		{
 			static void Postfix(PlayerId srcPlayerId, PlayerId suspectPlayerId)
 			{
@@ -376,6 +381,96 @@ namespace HydraMenu.modules
 				if(voter == null || votee == null) return;
 
 				PublishEvent(OnPlayerCastVote, voter, votee);
+			}
+		}
+
+		[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Deserialize))]
+		class PlayerCastVoteNonHost
+		{
+			static void Prefix(MeetingHud __instance, MessageReader reader)
+			{
+				if(AmongUsClient.Instance.AmHost) return;
+
+				int oldReadPosition = reader.Position;
+
+				int playerStateCount = reader.ReadPackedInt32();
+				if(playerStateCount > 1024 || playerStateCount > reader.BytesRemaining) goto end;
+
+				Dictionary<byte, byte> playerVotes = new Dictionary<byte, byte>();
+
+				for(int i = 0; i < playerStateCount; i++)
+				{
+					MessageReader msg = reader.ReadMessage();
+					byte voteeId = msg.ReadByte();
+
+					playerVotes[msg.Tag] = voteeId;
+				}
+
+				// Compare with what we have with new data to see vote changes
+				foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+				{
+					if(player.Data == null) continue;
+
+					PlayerVoteArea oldState = __instance.playerStates.FirstOrDefault(state => state.PlayerId == player.PlayerId);
+
+					bool inOld = oldState != null && oldState.VotedForId != 255;
+					bool inNew = playerVotes.TryGetValue(player.PlayerId, out byte voteeId) && voteeId != 255;
+
+					if(!inOld && inNew)
+					{
+						NetworkedPlayerInfo votee = GameData.Instance.GetPlayerById(voteeId);
+						if(votee == null) continue;
+
+						PublishEvent(OnPlayerCastVote, player.Data, votee);
+					}
+				}
+
+				end:
+				reader.Position = oldReadPosition;
+			}
+		}
+
+		[HarmonyPatch(typeof(HudOverrideSystemType), nameof(HudOverrideSystemType.UpdateSystem))]
+		class UpdateHudOverrideHost
+		{
+			static void Postfix(MessageReader msgReader)
+			{
+				msgReader.Position--;
+				HudOverrideSystemOperation operation = (HudOverrideSystemOperation)msgReader.ReadByte();
+				msgReader.Position++;
+
+				if(operation.HasFlag(HudOverrideSystemOperation.Sabotage))
+				{
+					Hydra.Log.LogMessage($"HudOverride system was sabotaged");
+					PublishEvent(OnHudOverrideSabotage);
+				}
+				else
+				{
+					Hydra.Log.LogMessage($"HudOverride system was repaired");
+					PublishEvent(OnHudOverrideRepair);
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(HudOverrideSystemType), nameof(HudOverrideSystemType.Deserialize))]
+		class UpdateHudOverrideNonHost
+		{
+			static void Prefix(HudOverrideSystemType __instance, MessageReader reader)
+			{
+				bool isActive = reader.ReadBoolean();
+				bool wasActive = __instance.IsActive;
+				reader.Position--;
+
+				if(!wasActive && isActive)
+				{
+					Hydra.Log.LogMessage($"HudOverride system was sabotaged");
+					PublishEvent(OnHudOverrideSabotage);
+				}
+				else if(wasActive && !isActive)
+				{
+					Hydra.Log.LogMessage($"HudOverride system was repaired");
+					PublishEvent(OnHudOverrideRepair);
+				}
 			}
 		}
 

@@ -5,7 +5,6 @@ using InnerNet;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static HydraMenu.network.Constants;
 
 namespace HydraMenu
 {
@@ -17,6 +16,8 @@ namespace HydraMenu
 		private static readonly Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<PetData> allPets = HatManager.Instance.allPets;
 		private static readonly Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<NamePlateData> allNameplates = HatManager.Instance.allNamePlates;
 
+		private static readonly System.Random rnd = new System.Random();
+
 		public static int GetRandomUnusedColor()
 		{
 			List<int> colors = Enumerable.Range(0, 18).ToList();
@@ -26,18 +27,14 @@ namespace HydraMenu
 				colors.Remove(player.Data.DefaultOutfit.ColorId);
 			}
 
-			System.Random rnd = new System.Random();
-
 			// Some modded lobbies may have more than 18 players, which means there will not be enough unique colors for everyone
 			// so we should take that edge case into account
 			return colors.Count != 0 ? colors[rnd.Next(0, colors.Count)] : rnd.Next(0, 18);
 		}
 
-		public static void RandomizePlayer(bool ingame = false)
+		public static void RandomizePlayer(bool inGame = false)
 		{
-			System.Random rnd = new System.Random();
-
-			if(ingame)
+			if(inGame)
 			{
 				PlayerControl.LocalPlayer.CmdCheckColor((byte)GetRandomUnusedColor());
 
@@ -60,16 +57,15 @@ namespace HydraMenu
 
 		public static PlayerControl GetRandomPlayer(bool excludeHost = false, bool excludeDead = false, bool excludeImposters = false, bool excludeSelf = true)
 		{
-			Il2CppSystem.Collections.Generic.List<PlayerControl> allPlayers = PlayerControl.AllPlayerControls;
 			List<PlayerControl> validPlayers = new List<PlayerControl>();
 
-			foreach(PlayerControl player in allPlayers)
+			foreach(PlayerControl player in PlayerControl.AllPlayerControls)
 			{
 				if(
 					(excludeSelf && AmongUsClient.Instance.ClientId == player.OwnerId) ||
 					(excludeHost && AmongUsClient.Instance.HostId == player.OwnerId) ||
 					(excludeDead && player.Data.IsDead) ||
-					(excludeImposters && player.Data.Role.CanUseKillButton)
+					(excludeImposters && RoleManager.IsImpostorRole(player.Data.RoleType))
 				) continue;
 
 				validPlayers.Add(player);
@@ -77,7 +73,6 @@ namespace HydraMenu
 
 			if(validPlayers.Count == 0) return null;
 
-			System.Random rnd = new System.Random();
 			return validPlayers[rnd.Next(validPlayers.Count)];
 		}
 
@@ -100,11 +95,11 @@ namespace HydraMenu
 				batch.QueueSetColor(PlayerControl.LocalPlayer, (byte)outfit.ColorId);
 			}
 
-			batch.QueueSetNameplateStr(PlayerControl.LocalPlayer, outfit.NamePlateId, ++outfit.NamePlateSequenceId);
-			batch.QueueSetHatStr(PlayerControl.LocalPlayer, outfit.HatId, ++outfit.HatSequenceId);
-			batch.QueueSetVisorStr(PlayerControl.LocalPlayer, outfit.VisorId, ++outfit.VisorSequenceId);
-			batch.QueueSetSkinStr(PlayerControl.LocalPlayer, outfit.SkinId, ++outfit.SkinSequenceId);
-			batch.QueueSetPetStr(PlayerControl.LocalPlayer, outfit.PetId, ++outfit.PetSequenceId);
+			batch.QueueSetNameplateStr(PlayerControl.LocalPlayer, outfit.NamePlateId);
+			batch.QueueSetHatStr(PlayerControl.LocalPlayer, outfit.HatId);
+			batch.QueueSetVisorStr(PlayerControl.LocalPlayer, outfit.VisorId);
+			batch.QueueSetSkinStr(PlayerControl.LocalPlayer, outfit.SkinId);
+			batch.QueueSetPetStr(PlayerControl.LocalPlayer, outfit.PetId);
 
 			batch.FinishBatch();
 		}
@@ -327,7 +322,7 @@ namespace HydraMenu
 			{
 				Hydra.Log.LogInfo($"Sending Enter ventilation system update to {player.OwnerId}");
 
-				MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+				MessageWriter writer = MessageWriter.Get(SendOption.None);
 				writer.Write((ushort)0);
 				writer.Write((byte)VentilationSystem.Operation.Enter);
 				writer.Write((byte)0);
@@ -338,7 +333,7 @@ namespace HydraMenu
 
 			Hydra.Log.LogInfo($"Sending BootImposters ventilation system update to {player.OwnerId}");
 
-			MessageWriter writer2 = MessageWriter.Get(SendOption.Reliable);
+			MessageWriter writer2 = MessageWriter.Get(SendOption.None);
 			writer2.Write((ushort)1);
 			writer2.Write((byte)VentilationSystem.Operation.BootImpostors);
 			writer2.Write((byte)0);
