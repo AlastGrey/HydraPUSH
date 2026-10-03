@@ -8,9 +8,12 @@ namespace HydraMenu.ui.sections
 	{
 		public MenuSection() : base("Menu") { }
 
+		private const float DROPDOWN_ITEM_HEIGHT = 25f;
+		private const float DROPDOWN_MAX_HEIGHT = 150f;
+
 		private Vector2 dropdownScroll = Vector2.zero;
 		private bool showConfigDropdown = false;
-		private byte configIndex = 0;
+		private int configIndex = 0;
 		private string[] configNamesCache = null;
 
 		public override void Render()
@@ -45,17 +48,16 @@ namespace HydraMenu.ui.sections
 				configNamesCache = Hydra.config.configList.ToArray();
 			}
 
-			if(GUILayout.Button(configNamesCache[configIndex]))
+			string selectedConfig = configNamesCache[configIndex];
+
+			if(GUILayout.Button(selectedConfig))
 			{
 				showConfigDropdown = !showConfigDropdown;
 			}
 
 			if(showConfigDropdown)
 			{
-				float itemHeight = 25f;
-				float maxHeight = 150f;
-				float contentHeight = configNamesCache.Length * itemHeight;
-				float boxHeight = Mathf.Min(contentHeight, maxHeight);
+				float boxHeight = Mathf.Min(configNamesCache.Length * DROPDOWN_ITEM_HEIGHT, DROPDOWN_MAX_HEIGHT);
 
 				dropdownScroll = GUILayout.BeginScrollView(dropdownScroll, GUILayout.Height(boxHeight));
 				GUILayout.BeginVertical("box");
@@ -63,7 +65,7 @@ namespace HydraMenu.ui.sections
 				{
 					if(GUILayout.Button(configNamesCache[i]))
 					{
-						configIndex = (byte)i;
+						configIndex = i;
 						showConfigDropdown = false;
 						dropdownScroll = Vector2.zero;
 					}
@@ -79,12 +81,12 @@ namespace HydraMenu.ui.sections
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button("Save"))
 			{
-				Hydra.config.SaveConfig(Hydra.config.configList[configIndex]);
+				Hydra.config.SaveConfig(selectedConfig);
 			}
 
 			if(GUILayout.Button("Load"))
 			{
-				Hydra.config.LoadConfig(Hydra.config.configList[configIndex]);
+				Hydra.config.LoadConfig(selectedConfig);
 			}
 			GUILayout.EndHorizontal();
 
