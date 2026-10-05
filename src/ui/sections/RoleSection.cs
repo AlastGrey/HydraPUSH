@@ -20,7 +20,10 @@ namespace HydraMenu.ui.sections
 			ModuleManager.noSabotageCooldown.Enabled = GUILayout.Toggle(ModuleManager.noSabotageCooldown.Enabled, "No Sabotage Cooldown");
 
 			ModuleManager.noShapeshiftAnimation.Enabled = GUILayout.Toggle(ModuleManager.noShapeshiftAnimation.Enabled, "Disable Shapeshift Animation");
-			ModuleManager.noInfluencerRefreshCooldown.Enabled = GUILayout.Toggle(ModuleManager.noInfluencerRefreshCooldown.Enabled, "No Influencer Refresh Cooldown");
+
+			string influencerCooldownName = Utilities.IsAnticheatPresent() ? "No Influencer Refresh Cooldown" : "No Influencer Cooldown";
+			ModuleManager.noInfluencerRefreshCooldown.Enabled = GUILayout.Toggle(ModuleManager.noInfluencerRefreshCooldown.Enabled, influencerCooldownName);
+			
 			// Roles.DisablePhantomEndAnimation = GUILayout.Toggle(Roles.DisablePhantomEndAnimation, "Disable Phantom End Animation");
 
 			GUILayout.Space(5);
