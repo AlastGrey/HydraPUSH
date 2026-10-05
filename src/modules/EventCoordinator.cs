@@ -41,7 +41,7 @@ namespace HydraMenu.modules
 		// Fired when a player presses one of the role ability buttons in the HUD
 		// We patch the buttons' DoClick function rather than RoleBehaviour::UseAbility, as the latter's base
 		// declaration is an empty virtual that gets "folded" with every other empty virtual on that class
-		public static event Action<PlayerControl> OnUseRoleAbility;
+		public static event Action<bool> OnUseRoleAbility;
 
 		public static event Action<ClientData, ClientData> OnPlayerVotekick;
 
@@ -70,16 +70,16 @@ namespace HydraMenu.modules
 		{
 			static void Prefix()
 			{
-				PublishEvent(OnUseRoleAbility, PlayerControl.LocalPlayer);
+				PublishEvent(OnUseRoleAbility, false);
 			}
 		}
 
 		[HarmonyPatch(typeof(SecondaryAbilityButton), nameof(SecondaryAbilityButton.DoClick))]
 		class UseSecondaryRoleAbility
 		{
-			static void Prefix()
+			static void Postfix()
 			{
-				PublishEvent(OnUseRoleAbility, PlayerControl.LocalPlayer);
+				PublishEvent(OnUseRoleAbility, true);
 			}
 		}
 
